@@ -141,6 +141,12 @@ Simple Icons is CC0; the brand marks themselves remain trademarks of their respe
 - **Progress covers downloading only.** Once a file is downloaded, winget hands off to the vendor's own installer, which reports no progress — the bar sits at 100% showing "Installing..." until it finishes.
 - **Microsoft Store apps excluded.** Apps that exist only in the Store (NVIDIA App, WhatsApp) are left out of the catalog because Store packages do not reliably install silently.
 
+## Policies
+
+- [Privacy Policy](PRIVACY.md) — StartUPs collects nothing; what winget contacts and why
+- [Terms of Use](TERMS.md) — no warranty, third-party licences, and how package agreements are accepted
+- [Security Policy](SECURITY.md) — how to report a vulnerability, the security model, verifying your download
+
 ## Built with
 
 - C# / .NET 8 / WPF
