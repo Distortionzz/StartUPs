@@ -198,7 +198,20 @@ public partial class MainWindow : Window
                 else
                 {
                     app.State = InstallState.Installing;
-                    var result = await WingetService.InstallAsync(app.WingetId, token);
+
+                    // Progress<T> was created on the UI thread, so these callbacks
+                    // marshal back to it automatically - safe to touch the card.
+                    var reporter = new Progress<DownloadSample>(sample =>
+                    {
+                        app.ReportDownload(sample.Percent,
+                            WingetService.FormatSpeed(sample.BytesPerSecond));
+
+                        ProgressLabel.Text = sample.BytesPerSecond > 0
+                            ? $"{app.Name}  -  {done + 1} of {queue.Count}   ({WingetService.FormatSpeed(sample.BytesPerSecond)})"
+                            : $"{app.Name}  -  {done + 1} of {queue.Count}";
+                    });
+
+                    var result = await WingetService.InstallAsync(app.WingetId, reporter, token);
 
                     if (result.Succeeded)
                     {

@@ -46,11 +46,33 @@ public class AppEntry : INotifyPropertyChanged
             OnPropertyChanged();
             OnPropertyChanged(nameof(StatusText));
             OnPropertyChanged(nameof(HasStatus));
+            OnPropertyChanged(nameof(ShowProgressBar));
         }
     }
 
     /// <summary>Details of a failure, shown in the end-of-run summary.</summary>
     [JsonIgnore] public string LastError { get; set; } = "";
+
+    private double _downloadPercent;
+    private string _speedText = "";
+
+    /// <summary>How full the green download bar is, 0-100.</summary>
+    [JsonIgnore] public double DownloadPercent => _downloadPercent;
+
+    /// <summary>Show the download bar only while bytes are actually moving.</summary>
+    [JsonIgnore]
+    public bool ShowProgressBar => _state == InstallState.Installing && _downloadPercent > 0;
+
+    /// <summary>Called from the install queue as winget reports bytes transferred.</summary>
+    public void ReportDownload(double percent, string speedText)
+    {
+        _downloadPercent = percent;
+        _speedText = speedText;
+
+        OnPropertyChanged(nameof(DownloadPercent));
+        OnPropertyChanged(nameof(ShowProgressBar));
+        OnPropertyChanged(nameof(StatusText));
+    }
 
     /// <summary>The label shown on the right-hand side of the card.</summary>
     [JsonIgnore]
@@ -58,13 +80,21 @@ public class AppEntry : INotifyPropertyChanged
     {
         InstallState.Pending => "Queued",
         InstallState.Checking => "Checking...",
-        InstallState.Installing => "Installing...",
+        InstallState.Installing => DownloadingLabel(),
         InstallState.Installed => "Installed",
         InstallState.AlreadyInstalled => "Already installed",
         InstallState.Failed => "Failed",
         InstallState.Cancelled => "Cancelled",
         _ => ""
     };
+
+    /// <summary>While bytes flow show "45%  12.4 MB/s"; once downloaded, the installer is running.</summary>
+    private string DownloadingLabel()
+    {
+        if (_downloadPercent <= 0) return "Starting...";
+        if (_downloadPercent >= 100 || _speedText.Length == 0) return "Installing...";
+        return $"{_downloadPercent:0}%   {_speedText}";
+    }
 
     [JsonIgnore]
     public bool HasStatus => _state != InstallState.None;
@@ -73,7 +103,12 @@ public class AppEntry : INotifyPropertyChanged
     public void ResetState()
     {
         LastError = "";
+        _downloadPercent = 0;
+        _speedText = "";
         State = InstallState.None;
+
+        OnPropertyChanged(nameof(DownloadPercent));
+        OnPropertyChanged(nameof(ShowProgressBar));
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

@@ -23,6 +23,39 @@
     <!-- Shared converter for showing per-app status text -->
     <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
+    <!-- ============================ GREEN DOWNLOAD BAR ============================ -->
+    <!-- Defined up here on purpose: StaticResource resolves top-down, so this must
+         appear BEFORE the AppCard style that uses it. -->
+    <LinearGradientBrush x:Key="DownloadFill" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#FF15A34A" Offset="0"/>
+        <GradientStop Color="#FF34D399" Offset="0.6"/>
+        <GradientStop Color="#FF6EE7A7" Offset="1"/>
+    </LinearGradientBrush>
+
+    <Style x:Key="DownloadBar" TargetType="ProgressBar">
+        <Setter Property="Height" Value="6"/>
+        <Setter Property="Minimum" Value="0"/>
+        <Setter Property="Maximum" Value="100"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <Border Background="#FF15151A" CornerRadius="3" ClipToBounds="True">
+                        <Grid>
+                            <Rectangle x:Name="PART_Track"/>
+                            <Border x:Name="PART_Indicator" HorizontalAlignment="Left"
+                                    Background="{StaticResource DownloadFill}" CornerRadius="3">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="#FF34D399" BlurRadius="10"
+                                                      ShadowDepth="0" Opacity="0.75"/>
+                                </Border.Effect>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ============================ SCROLLBAR ============================ -->
     <Style TargetType="ScrollBar">
         <Setter Property="Width" Value="10"/>
@@ -129,9 +162,13 @@
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
                             <!-- Tick box -->
-                            <Border x:Name="Box" Grid.Column="0" Width="20" Height="20"
+                            <Border x:Name="Box" Grid.Column="0" Grid.Row="0" Width="20" Height="20"
                                     CornerRadius="5" BorderThickness="2"
                                     BorderBrush="{StaticResource CardBorder}"
                                     Background="Transparent"
@@ -143,7 +180,7 @@
                             </Border>
 
                             <!-- Name + description -->
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <StackPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Center">
                                 <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold"
                                            Foreground="{StaticResource TextPrimary}"/>
                                 <TextBlock Text="{Binding Description}" FontSize="12" Margin="0,3,0,0"
@@ -151,11 +188,19 @@
                             </StackPanel>
 
                             <!-- Live install status -->
-                            <TextBlock x:Name="StatusLabel" Grid.Column="2" Text="{Binding StatusText}"
+                            <TextBlock x:Name="StatusLabel" Grid.Column="2" Grid.Row="0"
+                                       Text="{Binding StatusText}"
                                        FontSize="12" FontWeight="SemiBold"
                                        Foreground="{StaticResource TextMuted}" VerticalAlignment="Center"
-                                       Margin="12,0,0,0"
+                                       Margin="12,0,0,0" MinWidth="96" TextAlignment="Right"
                                        Visibility="{Binding HasStatus, Converter={StaticResource BoolToVis}}"/>
+
+                            <!-- Green download bar, only while bytes are moving -->
+                            <ProgressBar Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                                         Style="{StaticResource DownloadBar}"
+                                         Value="{Binding DownloadPercent, Mode=OneWay}"
+                                         Margin="0,11,0,2"
+                                         Visibility="{Binding ShowProgressBar, Converter={StaticResource BoolToVis}}"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
