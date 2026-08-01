@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "updated": "2026-07-31",
+  "categories": [
+    {
+      "id": "gaming",
+      "name": "Gaming",
+      "icon": "🎮",
+      "apps": [
+        { "wingetId": "Valve.Steam", "name": "Steam", "description": "The biggest PC game store and library.", "essential": true },
+        { "wingetId": "EpicGames.EpicGamesLauncher", "name": "Epic Games Launcher", "description": "Epic's store, free weekly games, and Unreal Engine.", "essential": true },
+        { "wingetId": "ElectronicArts.EADesktop", "name": "EA App", "description": "Launcher for EA titles like Battlefield and The Sims.", "essential": false },
+        { "wingetId": "Ubisoft.Connect", "name": "Ubisoft Connect", "description": "Launcher for Assassin's Creed, Far Cry, and more.", "essential": false },
+        { "wingetId": "GOG.Galaxy", "name": "GOG Galaxy", "description": "DRM-free game store and unified library manager.", "essential": false },
+        { "wingetId": "Blizzard.BattleNet", "name": "Battle.net", "description": "Launcher for Blizzard games and Call of Duty.", "essential": false },
+        { "wingetId": "Playnite.Playnite", "name": "Playnite", "description": "Combines every launcher into one game library.", "essential": false }
+      ]
+    },
+    {
+      "id": "development",
+      "name": "Development",
+      "icon": "💻",
+      "apps": [
+        { "wingetId": "Microsoft.VisualStudioCode", "name": "Visual Studio Code", "description": "Lightweight, extensible code editor.", "essential": true },
+        { "wingetId": "Microsoft.VisualStudio.2022.Community", "name": "Visual Studio 2022", "description": "Full IDE for C#, C++, and Unity development.", "essential": false },
+        { "wingetId": "Git.Git", "name": "Git", "description": "Version control — required by most dev tools.", "essential": true },
+        { "wingetId": "Anthropic.Claude", "name": "Claude", "description": "Anthropic's AI assistant for desktop.", "essential": true },
+        { "wingetId": "Python.Python.3.12", "name": "Python 3.12", "description": "Popular scripting and automation language.", "essential": false },
+        { "wingetId": "OpenJS.NodeJS", "name": "Node.js", "description": "JavaScript runtime for web and app development.", "essential": false },
+        { "wingetId": "Unity.UnityHub", "name": "Unity Hub", "description": "Manages Unity Editor versions and projects.", "essential": false },
+        { "wingetId": "Docker.DockerDesktop", "name": "Docker Desktop", "description": "Run apps in isolated containers.", "essential": false },
+        { "wingetId": "Notepad++.Notepad++", "name": "Notepad++", "description": "Fast text editor with syntax highlighting.", "essential": false },
+        { "wingetId": "JetBrains.Toolbox", "name": "JetBrains Toolbox", "description": "Installer for Rider, IntelliJ, PyCharm, and more.", "essential": false },
+        { "wingetId": "GitHub.GitHubDesktop", "name": "GitHub Desktop", "description": "Visual Git client for GitHub repositories.", "essential": false },
+        { "wingetId": "Microsoft.WindowsTerminal", "name": "Windows Terminal", "description": "Modern tabbed terminal for PowerShell and more.", "essential": false },
+        { "wingetId": "Postman.Postman", "name": "Postman", "description": "Test and debug REST APIs.", "essential": false }
+      ]
+    },
+    {
+      "id": "browsers",
+      "name": "Browsers",
+      "icon": "🌐",
+      "apps": [
+        { "wingetId": "Google.Chrome", "name": "Google Chrome", "description": "The most widely used web browser.", "essential": true },
+        { "wingetId": "Mozilla.Firefox", "name": "Mozilla Firefox", "description": "Privacy-focused open source browser.", "essential": false },
+        { "wingetId": "Brave.Brave", "name": "Brave", "description": "Chromium browser with built-in ad blocking.", "essential": false },
+        { "wingetId": "Opera.OperaGX", "name": "Opera GX", "description": "Gaming browser with CPU and RAM limiters.", "essential": false }
+      ]
+    },
+    {
+      "id": "media",
+      "name": "Media",
+      "icon": "🎵",
+      "apps": [
+        { "wingetId": "VideoLAN.VLC", "name": "VLC Media Player", "description": "Plays virtually any audio or video format.", "essential": true },
+        { "wingetId": "Spotify.Spotify", "name": "Spotify", "description": "Music and podcast streaming.", "essential": true },
+        { "wingetId": "OBSProject.OBSStudio", "name": "OBS Studio", "description": "Free streaming and screen recording software.", "essential": true },
+        { "wingetId": "Audacity.Audacity", "name": "Audacity", "description": "Multi-track audio editor and recorder.", "essential": false },
+        { "wingetId": "HandBrake.HandBrake", "name": "HandBrake", "description": "Convert and compress video files.", "essential": false },
+        { "wingetId": "GIMP.GIMP", "name": "GIMP", "description": "Free image editor, a Photoshop alternative.", "essential": false },
+        { "wingetId": "BlenderFoundation.Blender", "name": "Blender", "description": "3D modeling, animation, and rendering suite.", "essential": false }
+      ]
+    },
+    {
+      "id": "utilities",
+      "name": "Utilities",
+      "icon": "🔧",
+      "apps": [
+        { "wingetId": "7zip.7zip", "name": "7-Zip", "description": "Opens ZIP, RAR, and 7z archives.", "essential": true },
+        { "wingetId": "Microsoft.PowerToys", "name": "PowerToys", "description": "Microsoft's power-user utility bundle for Windows.", "essential": true },
+        { "wingetId": "voidtools.Everything", "name": "Everything", "description": "Instantly searches every file on your PC.", "essential": true },
+        { "wingetId": "REALiX.HWiNFO", "name": "HWiNFO", "description": "Detailed hardware monitoring and sensor readouts.", "essential": true },
+        { "wingetId": "CPUID.CPU-Z", "name": "CPU-Z", "description": "Reports CPU, RAM, and motherboard specs.", "essential": false },
+        { "wingetId": "TechPowerUp.GPU-Z", "name": "GPU-Z", "description": "Detailed graphics card information and monitoring.", "essential": false },
+        { "wingetId": "CPUID.HWMonitor", "name": "HWMonitor", "description": "Tracks system temperatures, voltages, and fan speeds.", "essential": false },
+        { "wingetId": "Guru3D.Afterburner", "name": "MSI Afterburner", "description": "GPU overclocking and in-game performance overlay.", "essential": false },
+        { "wingetId": "CrystalDewWorld.CrystalDiskInfo", "name": "CrystalDiskInfo", "description": "Monitors SSD and hard drive health.", "essential": false },
+        { "wingetId": "RARLab.WinRAR", "name": "WinRAR", "description": "Classic archive utility for RAR files.", "essential": false },
+        { "wingetId": "Rufus.Rufus", "name": "Rufus", "description": "Creates bootable USB drives.", "essential": false },
+        { "wingetId": "RevoUninstaller.RevoUninstaller", "name": "Revo Uninstaller", "description": "Removes programs along with leftover files.", "essential": false }
+      ]
+    },
+    {
+      "id": "communication",
+      "name": "Communication",
+      "icon": "💬",
+      "apps": [
+        { "wingetId": "Discord.Discord", "name": "Discord", "description": "Voice and text chat built for gamers.", "essential": true },
+        { "wingetId": "Zoom.Zoom", "name": "Zoom", "description": "Video meetings and conferencing.", "essential": false },
+        { "wingetId": "SlackTechnologies.Slack", "name": "Slack", "description": "Team messaging and collaboration.", "essential": false },
+        { "wingetId": "Telegram.TelegramDesktop", "name": "Telegram", "description": "Fast cloud-based messaging app.", "essential": false },
+        { "wingetId": "Microsoft.Teams", "name": "Microsoft Teams", "description": "Work chat, meetings, and file sharing.", "essential": false }
+      ]
+    }
+  ]
+}

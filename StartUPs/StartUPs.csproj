@@ -8,4 +8,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <!-- Bake the app catalog into the .exe so the published build is a single file -->
+  <ItemGroup>
+    <EmbeddedResource Include="catalog.json" />
+  </ItemGroup>
+
 </Project>
