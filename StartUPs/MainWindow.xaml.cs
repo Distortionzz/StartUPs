@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -21,6 +22,9 @@ public partial class MainWindow : Window
     private ICollectionView _view = null!;
     private string _activeCategoryId = AllCategoryId;
     private string _searchText = "";
+
+    private CancellationTokenSource? _cancelSource;
+    private bool _isInstalling;
 
     public MainWindow()
     {
@@ -136,23 +140,185 @@ public partial class MainWindow : Window
             app.IsSelected = false;
     }
 
-    private void Install_Click(object sender, RoutedEventArgs e)
-    {
-        var selected = _apps.Where(a => a.IsSelected).ToList();
-        if (selected.Count == 0) return;
+    // ---------------------------------------------------------------- install run
 
-        // Step 5 replaces this placeholder with the real winget install queue.
-        var names = string.Join("\n", selected.Select(a => $"  - {a.Name}  ({a.WingetId})"));
-        MessageBox.Show(this,
-            $"Ready to install {selected.Count} app(s):\n\n{names}\n\n" +
-            "The winget install engine gets wired up in the next step.",
-            "StartUPs", MessageBoxButton.OK, MessageBoxImage.Information);
+    private async void Install_Click(object sender, RoutedEventArgs e)
+    {
+        // While a run is active the same button acts as Cancel.
+        if (_isInstalling)
+        {
+            _cancelSource?.Cancel();
+            InstallButton.IsEnabled = false;
+            InstallButton.Content = "Cancelling...";
+            return;
+        }
+
+        var queue = _apps.Where(a => a.IsSelected).ToList();
+        if (queue.Count == 0) return;
+
+        if (!WingetService.IsAvailable())
+        {
+            MessageBox.Show(this,
+                "winget (the Windows Package Manager) could not be found on this PC.\n\n" +
+                "It ships with Windows 11 and recent Windows 10 builds as part of App Installer. " +
+                "Install or update 'App Installer' from the Microsoft Store, then try again.",
+                "winget not found", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        await RunInstallQueueAsync(queue);
+    }
+
+    private async Task RunInstallQueueAsync(List<AppEntry> queue)
+    {
+        _cancelSource = new CancellationTokenSource();
+        var token = _cancelSource.Token;
+
+        EnterInstallMode(queue);
+
+        foreach (var app in queue)
+            app.State = InstallState.Pending;
+
+        int done = 0;
+
+        try
+        {
+            foreach (var app in queue)
+            {
+                token.ThrowIfCancellationRequested();
+
+                ProgressLabel.Text = $"{app.Name}  -  {done + 1} of {queue.Count}";
+
+                // Skip anything already on the PC rather than reinstalling it.
+                app.State = InstallState.Checking;
+                if (await WingetService.IsInstalledAsync(app.WingetId, token))
+                {
+                    app.State = InstallState.AlreadyInstalled;
+                }
+                else
+                {
+                    app.State = InstallState.Installing;
+                    var result = await WingetService.InstallAsync(app.WingetId, token);
+
+                    if (result.Succeeded)
+                    {
+                        app.State = InstallState.Installed;
+                    }
+                    else
+                    {
+                        app.LastError = $"winget exited with {result.ExitCodeHex}";
+                        app.State = InstallState.Failed;
+                    }
+                }
+
+                done++;
+                InstallProgress.Value = done;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            foreach (var app in queue)
+            {
+                if (app.State is InstallState.Pending or InstallState.Checking or InstallState.Installing)
+                    app.State = InstallState.Cancelled;
+            }
+        }
+        finally
+        {
+            ExitInstallMode();
+            _cancelSource?.Dispose();
+            _cancelSource = null;
+        }
+
+        ShowRunSummary(queue);
+    }
+
+    private void EnterInstallMode(List<AppEntry> queue)
+    {
+        _isInstalling = true;
+
+        foreach (var app in _apps)
+        {
+            if (!queue.Contains(app))
+                app.ResetState();
+        }
+
+        BodyGrid.IsEnabled = false;          // stop selection changing mid-run
+        EssentialsButton.IsEnabled = false;
+        ClearButton.IsEnabled = false;
+
+        InstallButton.Content = "Cancel";
+        InstallButton.IsEnabled = true;
+
+        InstallProgress.Maximum = queue.Count;
+        InstallProgress.Value = 0;
+        ProgressArea.Visibility = Visibility.Visible;
+        SelectionSummary.Text = $"Installing {queue.Count} app(s)...";
+    }
+
+    private void ExitInstallMode()
+    {
+        _isInstalling = false;
+
+        BodyGrid.IsEnabled = true;
+        EssentialsButton.IsEnabled = true;
+        ClearButton.IsEnabled = true;
+        ProgressArea.Visibility = Visibility.Collapsed;
+        ProgressLabel.Text = "";
+
+        UpdateSummary();
+    }
+
+    private void ShowRunSummary(List<AppEntry> queue)
+    {
+        int installed = queue.Count(a => a.State == InstallState.Installed);
+        int already = queue.Count(a => a.State == InstallState.AlreadyInstalled);
+        var failed = queue.Where(a => a.State == InstallState.Failed).ToList();
+        int cancelled = queue.Count(a => a.State == InstallState.Cancelled);
+
+        var message = new StringBuilder();
+        message.AppendLine($"Installed:          {installed}");
+        if (already > 0) message.AppendLine($"Already present:    {already}");
+        if (cancelled > 0) message.AppendLine($"Cancelled:          {cancelled}");
+        if (failed.Count > 0)
+        {
+            message.AppendLine($"Failed:             {failed.Count}");
+            message.AppendLine();
+            foreach (var app in failed)
+                message.AppendLine($"  - {app.Name}: {app.LastError}");
+        }
+
+        MessageBox.Show(this, message.ToString(), "StartUPs - run complete",
+            MessageBoxButton.OK,
+            failed.Count > 0 ? MessageBoxImage.Warning : MessageBoxImage.Information);
+    }
+
+    protected override void OnClosing(CancelEventArgs e)
+    {
+        if (_isInstalling)
+        {
+            var answer = MessageBox.Show(this,
+                "An install is still running. Closing now will interrupt it.\n\nClose anyway?",
+                "StartUPs", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+            if (answer == MessageBoxResult.No)
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            _cancelSource?.Cancel();
+        }
+
+        base.OnClosing(e);
     }
 
     // ---------------------------------------------------------------- summary
 
     private void UpdateSummary()
     {
+        if (_isInstalling) return;
+
         int count = _apps.Count(a => a.IsSelected);
 
         SelectionSummary.Text = count switch

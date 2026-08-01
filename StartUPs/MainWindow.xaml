@@ -58,7 +58,7 @@
         </Border>
 
         <!-- ==================== BODY ==================== -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" x:Name="BodyGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="210"/>
                 <ColumnDefinition Width="*"/>
@@ -116,27 +116,43 @@
 
         <!-- ==================== FOOTER ==================== -->
         <Border Grid.Row="2" Background="{StaticResource SidebarBg}" Padding="24,14">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+            <StackPanel>
 
-                <TextBlock x:Name="SelectionSummary" Grid.Column="0"
-                           Text="No apps selected" FontSize="13"
-                           Foreground="{StaticResource TextMuted}"
-                           VerticalAlignment="Center"/>
+                <!-- Progress, shown only while a run is in flight -->
+                <Grid x:Name="ProgressArea" Visibility="Collapsed" Margin="0,0,0,14">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock x:Name="ProgressLabel" Grid.Row="0" Text=""
+                               FontSize="12" Foreground="{StaticResource TextPrimary}"
+                               Margin="0,0,0,8"/>
+                    <ProgressBar x:Name="InstallProgress" Grid.Row="1" Minimum="0" Maximum="1" Value="0"/>
+                </Grid>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Button Content="Select Essentials" Style="{StaticResource GhostButton}"
-                            Margin="0,0,8,0" Click="SelectEssentials_Click"/>
-                    <Button x:Name="ClearButton" Content="Clear" Style="{StaticResource GhostButton}"
-                            Margin="0,0,8,0" Click="Clear_Click"/>
-                    <Button x:Name="InstallButton" Content="Install Selected"
-                            Style="{StaticResource PrimaryButton}"
-                            IsEnabled="False" Click="Install_Click"/>
-                </StackPanel>
-            </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock x:Name="SelectionSummary" Grid.Column="0"
+                               Text="No apps selected" FontSize="13"
+                               Foreground="{StaticResource TextMuted}"
+                               VerticalAlignment="Center"/>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button x:Name="EssentialsButton" Content="Select Essentials"
+                                Style="{StaticResource GhostButton}"
+                                Margin="0,0,8,0" Click="SelectEssentials_Click"/>
+                        <Button x:Name="ClearButton" Content="Clear" Style="{StaticResource GhostButton}"
+                                Margin="0,0,8,0" Click="Clear_Click"/>
+                        <Button x:Name="InstallButton" Content="Install Selected"
+                                Style="{StaticResource PrimaryButton}"
+                                IsEnabled="False" Click="Install_Click"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
         </Border>
     </Grid>
 </Window>

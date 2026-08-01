@@ -32,24 +32,49 @@ public class AppEntry : INotifyPropertyChanged
         }
     }
 
-    private string _status = "";
+    private InstallState _state = InstallState.None;
 
-    /// <summary>Per-app install progress text, shown on the card. Empty until Step 5 wires up winget.</summary>
+    /// <summary>Where this app sits in the current install run.</summary>
     [JsonIgnore]
-    public string Status
+    public InstallState State
     {
-        get => _status;
+        get => _state;
         set
         {
-            if (_status == value) return;
-            _status = value;
+            if (_state == value) return;
+            _state = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(StatusText));
             OnPropertyChanged(nameof(HasStatus));
         }
     }
 
+    /// <summary>Details of a failure, shown in the end-of-run summary.</summary>
+    [JsonIgnore] public string LastError { get; set; } = "";
+
+    /// <summary>The label shown on the right-hand side of the card.</summary>
     [JsonIgnore]
-    public bool HasStatus => !string.IsNullOrEmpty(_status);
+    public string StatusText => _state switch
+    {
+        InstallState.Pending => "Queued",
+        InstallState.Checking => "Checking...",
+        InstallState.Installing => "Installing...",
+        InstallState.Installed => "Installed",
+        InstallState.AlreadyInstalled => "Already installed",
+        InstallState.Failed => "Failed",
+        InstallState.Cancelled => "Cancelled",
+        _ => ""
+    };
+
+    [JsonIgnore]
+    public bool HasStatus => _state != InstallState.None;
+
+    /// <summary>Clears any status left over from a previous run.</summary>
+    public void ResetState()
+    {
+        LastError = "";
+        State = InstallState.None;
+    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
