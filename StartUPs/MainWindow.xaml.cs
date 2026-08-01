@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Interop;
+using System.Windows.Media;
 using StartUPs.Models;
 using StartUPs.Services;
 
@@ -17,6 +18,7 @@ namespace StartUPs;
 public partial class MainWindow : Window
 {
     private const string AllCategoryId = "all";
+    private const string UpdatesCategoryId = "updates";
 
     private readonly ObservableCollection<AppEntry> _apps = new();
     private ICollectionView _view = null!;
@@ -60,6 +62,7 @@ public partial class MainWindow : Window
             new() { Id = AllCategoryId, Name = "All Apps", Icon = "\U0001F4E6" }
         };
         sidebar.AddRange(catalog.Categories);
+        sidebar.Add(new Category { Id = UpdatesCategoryId, Name = "Updates", Icon = "⬇" });
 
         CategoryList.ItemsSource = sidebar;
         CategoryList.SelectedIndex = 0;
@@ -112,8 +115,37 @@ public partial class MainWindow : Window
     private void CategoryList_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (CategoryList.SelectedItem is not Category category) return;
+
+        if (category.Id == UpdatesCategoryId)
+        {
+            ShowUpdatesView();
+            return;
+        }
+
+        ShowAppsView();
         _activeCategoryId = category.Id;
         RefreshList();
+    }
+
+    // ---------------------------------------------------------------- view switching
+
+    private void ShowUpdatesView()
+    {
+        UpdatePanel.Visibility = Visibility.Visible;
+        AppScroller.Visibility = Visibility.Collapsed;
+        EmptyMessage.Visibility = Visibility.Collapsed;
+        SearchArea.Visibility = Visibility.Hidden;
+        FooterActions.Visibility = Visibility.Collapsed;
+        SelectionSummary.Text = $"StartUPs {UpdateService.CurrentVersion.ToString(3)}";
+    }
+
+    private void ShowAppsView()
+    {
+        UpdatePanel.Visibility = Visibility.Collapsed;
+        AppScroller.Visibility = Visibility.Visible;
+        SearchArea.Visibility = Visibility.Visible;
+        FooterActions.Visibility = Visibility.Visible;
+        UpdateSummary();
     }
 
     private void SearchInput_TextChanged(object sender, TextChangedEventArgs e)
@@ -324,6 +356,130 @@ public partial class MainWindow : Window
         }
 
         base.OnClosing(e);
+    }
+
+    // ---------------------------------------------------------------- updates
+
+    private UpdateInfo? _pendingUpdate;
+    private bool _updateBusy;
+
+    private async void CheckUpdate_Click(object sender, RoutedEventArgs e)
+    {
+        if (_updateBusy) return;
+        _updateBusy = true;
+
+        CheckUpdateButton.IsEnabled = false;
+        CheckUpdateButton.Content = "Checking...";
+        DownloadUpdateButton.Visibility = Visibility.Collapsed;
+        ReleaseNotesHeader.Visibility = Visibility.Collapsed;
+        ReleaseNotesCard.Visibility = Visibility.Collapsed;
+
+        UpdateHeadline.Foreground = (Brush)FindResource("TextPrimary");
+        UpdateHeadline.Text = "Checking GitHub...";
+        UpdateDetail.Text = "";
+
+        try
+        {
+            var info = await UpdateService.CheckAsync(CancellationToken.None);
+            _pendingUpdate = info;
+            ApplyUpdateResult(info);
+        }
+        finally
+        {
+            CheckUpdateButton.IsEnabled = true;
+            CheckUpdateButton.Content = "Check again";
+            _updateBusy = false;
+        }
+    }
+
+    private void ApplyUpdateResult(UpdateInfo info)
+    {
+        string current = info.CurrentVersion.ToString(3);
+
+        switch (info.Status)
+        {
+            case UpdateStatus.UpdateAvailable:
+                // The green highlight is the whole point of this view.
+                UpdateHeadline.Foreground = (Brush)FindResource("SuccessBrush");
+                UpdateHeadline.Text = $"Update available  -  v{info.LatestVersion?.ToString(3)}";
+                UpdateDetail.Text = info.CanDownload
+                    ? $"You are running v{current}. The download is {UpdateService.FormatSize(info.DownloadSize)}. " +
+                      "StartUPs will restart once it is installed."
+                    : $"You are running v{current}, but this release has no downloadable StartUPs.exe attached.";
+
+                DownloadUpdateButton.Visibility = info.CanDownload ? Visibility.Visible : Visibility.Collapsed;
+                DownloadUpdateButton.IsEnabled = info.CanDownload;
+                break;
+
+            case UpdateStatus.UpToDate:
+                UpdateHeadline.Foreground = (Brush)FindResource("TextPrimary");
+                UpdateHeadline.Text = "You are up to date";
+                UpdateDetail.Text = $"v{current} is the latest release.";
+                break;
+
+            default:
+                UpdateHeadline.Foreground = (Brush)FindResource("FailureBrush");
+                UpdateHeadline.Text = "Could not check for updates";
+                UpdateDetail.Text = info.ErrorMessage;
+                break;
+        }
+
+        if (!string.IsNullOrWhiteSpace(info.ReleaseNotes) && info.Status == UpdateStatus.UpdateAvailable)
+        {
+            ReleaseNotesText.Text = info.ReleaseNotes;
+            ReleaseNotesHeader.Visibility = Visibility.Visible;
+            ReleaseNotesCard.Visibility = Visibility.Visible;
+        }
+    }
+
+    private async void DownloadUpdate_Click(object sender, RoutedEventArgs e)
+    {
+        if (_updateBusy || _pendingUpdate?.DownloadUrl is null) return;
+
+        var confirm = MessageBox.Show(this,
+            $"Download v{_pendingUpdate.LatestVersion?.ToString(3)} and restart StartUPs?\n\n" +
+            "The running version will be replaced.",
+            "StartUPs", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+
+        if (confirm != MessageBoxResult.OK) return;
+
+        _updateBusy = true;
+        DownloadUpdateButton.IsEnabled = false;
+        CheckUpdateButton.IsEnabled = false;
+        UpdateProgress.Value = 0;
+        UpdateProgress.Visibility = Visibility.Visible;
+
+        var reporter = new Progress<(long Received, long Total)>(p =>
+        {
+            if (p.Total > 0) UpdateProgress.Value = p.Received * 100.0 / p.Total;
+            UpdateDetail.Text =
+                $"Downloading {UpdateService.FormatSize(p.Received)} of {UpdateService.FormatSize(p.Total)}...";
+        });
+
+        try
+        {
+            var file = await UpdateService.DownloadAsync(
+                _pendingUpdate.DownloadUrl, _pendingUpdate.ExpectedSha256, reporter, CancellationToken.None);
+
+            UpdateDetail.Text = "Checksum verified. Restarting to finish the update...";
+            UpdateService.ApplyUpdateAndRestart(file);
+
+            // The helper script waits for this process to exit before swapping the file.
+            Application.Current.Shutdown();
+        }
+        catch (Exception ex)
+        {
+            UpdateProgress.Visibility = Visibility.Collapsed;
+            UpdateHeadline.Foreground = (Brush)FindResource("FailureBrush");
+            UpdateHeadline.Text = "Update failed";
+            UpdateDetail.Text = ex.Message;
+            DownloadUpdateButton.IsEnabled = true;
+            CheckUpdateButton.IsEnabled = true;
+        }
+        finally
+        {
+            _updateBusy = false;
+        }
     }
 
     // ---------------------------------------------------------------- summary

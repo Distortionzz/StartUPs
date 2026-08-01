@@ -2,7 +2,7 @@
 
 **Last updated: 1 August 2026**
 
-Short version: **StartUPs collects nothing about you.** It has no accounts, no telemetry, no analytics, and no crash reporting, and it makes no network connections of its own.
+Short version: **StartUPs collects nothing about you.** It has no accounts, no telemetry, no analytics, and no crash reporting. It makes exactly one kind of network request of its own — an update check, and only when you ask for it.
 
 ## What StartUPs collects
 
@@ -17,8 +17,19 @@ StartUPs does not:
 - Write settings, logs, or any other files to your PC
 - Read or modify your registry
 - Contact any server operated by the developer — there is no such server
+- Check for updates on its own, in the background, or at startup
 
-This is verifiable: the source code in this repository contains no HTTP client, no socket use, and no file-writing code. The only outbound action StartUPs performs is launching the `winget` command.
+This is verifiable in the source: there is no analytics library, no logging, and no code that writes settings.
+
+## Checking for updates
+
+The **Updates** tab asks GitHub whether a newer release exists. This is the only network request StartUPs makes itself, and:
+
+- It happens **only when you press "Check for updates"**. There is no automatic or background check, and nothing is contacted at startup.
+- It is an ordinary anonymous request to `api.github.com`, with no account and no identifier attached. GitHub sees a request from your IP address, as it would from any web browser, governed by the [GitHub Privacy Statement](https://docs.github.com/site-policy/privacy-policies/github-privacy-statement).
+- Nothing about you, your PC, or the apps you selected is transmitted. The request asks a single question — what is the latest release — and sends nothing else.
+
+If you press **Download and install**, the new executable is downloaded from GitHub, its checksum is verified against the one GitHub published, and StartUPs restarts.
 
 ## What happens when you install apps
 

@@ -35,7 +35,7 @@
                                FontSize="12" Foreground="{StaticResource TextMuted}" Margin="0,2,0,0"/>
                 </StackPanel>
 
-                <Grid Grid.Column="1" Width="260" VerticalAlignment="Center">
+                <Grid x:Name="SearchArea" Grid.Column="1" Width="260" VerticalAlignment="Center">
                     <TextBox x:Name="SearchInput"
                              Style="{StaticResource SearchBox}"
                              TextChanged="SearchInput_TextChanged"/>
@@ -84,7 +84,7 @@
             </Border>
 
             <!-- App list -->
-            <ScrollViewer Grid.Column="1" Margin="20,16,12,8"
+            <ScrollViewer x:Name="AppScroller" Grid.Column="1" Margin="20,16,12,8"
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
                 <ItemsControl x:Name="AppList" Margin="0,0,10,0">
@@ -112,6 +112,56 @@
                        Foreground="{StaticResource TextMuted}" FontSize="13"
                        HorizontalAlignment="Center" VerticalAlignment="Center"
                        Visibility="Collapsed"/>
+
+            <!-- ==================== UPDATES VIEW ==================== -->
+            <ScrollViewer x:Name="UpdatePanel" Grid.Column="1" Visibility="Collapsed"
+                          Margin="28,22,20,10" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="0,0,10,0">
+
+                    <TextBlock Text="Updates" FontSize="20" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimary}"/>
+                    <TextBlock Text="StartUPs checks GitHub for new releases. Nothing is sent about you."
+                               FontSize="12" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
+
+                    <!-- Status card -->
+                    <Border Background="{StaticResource CardBg}" BorderBrush="{StaticResource CardBorder}"
+                            BorderThickness="1" CornerRadius="12" Padding="20,18" Margin="0,18,0,0">
+                        <StackPanel>
+                            <TextBlock x:Name="UpdateHeadline" Text="Check for updates"
+                                       FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{StaticResource TextPrimary}" TextWrapping="Wrap"/>
+
+                            <TextBlock x:Name="UpdateDetail" Text=""
+                                       FontSize="12.5" Margin="0,6,0,0" TextWrapping="Wrap"
+                                       Foreground="{StaticResource TextMuted}"/>
+
+                            <ProgressBar x:Name="UpdateProgress" Style="{StaticResource DownloadBar}"
+                                         Margin="0,16,0,0" Visibility="Collapsed"/>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,18,0,0">
+                                <Button x:Name="CheckUpdateButton" Content="Check for updates"
+                                        Style="{StaticResource GhostButton}" Margin="0,0,10,0"
+                                        Click="CheckUpdate_Click"/>
+                                <Button x:Name="DownloadUpdateButton" Content="Download and install"
+                                        Style="{StaticResource SuccessButton}" Visibility="Collapsed"
+                                        Click="DownloadUpdate_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Release notes -->
+                    <TextBlock x:Name="ReleaseNotesHeader" Text="What's new"
+                               FontSize="12" FontWeight="Bold" Margin="2,24,0,8"
+                               Foreground="{StaticResource TextMuted}" Visibility="Collapsed"/>
+                    <Border x:Name="ReleaseNotesCard" Background="{StaticResource CardBg}"
+                            BorderBrush="{StaticResource CardBorder}" BorderThickness="1"
+                            CornerRadius="12" Padding="18,16" Visibility="Collapsed">
+                        <TextBlock x:Name="ReleaseNotesText" Text="" TextWrapping="Wrap"
+                                   FontSize="12.5" LineHeight="19"
+                                   Foreground="{StaticResource TextPrimary}"/>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
 
         <!-- ==================== FOOTER ==================== -->
@@ -141,7 +191,7 @@
                                Foreground="{StaticResource TextMuted}"
                                VerticalAlignment="Center"/>
 
-                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <StackPanel x:Name="FooterActions" Grid.Column="1" Orientation="Horizontal">
                         <Button x:Name="EssentialsButton" Content="Select Essentials"
                                 Style="{StaticResource GhostButton}"
                                 Margin="0,0,8,0" Click="SelectEssentials_Click"/>

@@ -22,6 +22,7 @@ Setting up a fresh Windows install means visiting a dozen websites, dodging the 
 - **Select Essentials** — one click ticks the 14 apps almost everyone wants
 - **Instant search** across app names, descriptions, and package IDs
 - **Cancel any time** — stops the current download and leaves the rest untouched
+- **Built-in updater** — checks GitHub on request, verifies the download's checksum, and restarts into the new version
 - **Single portable .exe** — no installer, no .NET runtime required
 
 ![Splash screen](docs/splash.png)
