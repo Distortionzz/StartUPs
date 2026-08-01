@@ -8,6 +8,27 @@
     <UseWPF>true</UseWPF>
     <!-- Requests admin at launch so one UAC prompt covers the whole install batch -->
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+
+    <!-- Shown in the .exe properties dialog and the UAC prompt -->
+    <Product>StartUPs</Product>
+    <AssemblyTitle>StartUPs</AssemblyTitle>
+    <Description>Pick your apps. Install them all at once.</Description>
+    <Authors>Distortionzz</Authors>
+    <Company>Distortionzz</Company>
+    <Version>1.0.0</Version>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Copyright>Copyright (c) 2026 Distortionzz</Copyright>
+  </PropertyGroup>
+
+  <!-- Publish profile: one self-contained file, no .NET required on the user's PC -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
   </PropertyGroup>
 
   <!-- Bake the app catalog into the .exe so the published build is a single file -->
