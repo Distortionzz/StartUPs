@@ -1,0 +1,179 @@
+<Window x:Class="StartUPs.SplashWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" ShowInTaskbar="False" Topmost="True"
+        WindowStartupLocation="CenterScreen"
+        Width="480" Height="300"
+        FontFamily="Segoe UI">
+
+    <!-- The card fades itself in; Window.Opacity is reserved for the fade-out,
+         so the two animations never contend for the same property. -->
+    <Border x:Name="Card" Margin="24" CornerRadius="18" BorderThickness="1"
+            Opacity="0" BorderBrush="#FF2E2E3A">
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#FF1B1B24" Offset="0"/>
+                <GradientStop Color="#FF101015" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.Background>
+        <Border.Effect>
+            <DropShadowEffect Color="Black" BlurRadius="34" ShadowDepth="0" Opacity="0.65"/>
+        </Border.Effect>
+
+        <Grid>
+            <!-- Soft purple bloom behind the logo -->
+            <Ellipse Width="260" Height="260" HorizontalAlignment="Center"
+                     VerticalAlignment="Top" Margin="0,-70,0,0" IsHitTestVisible="False">
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Color="#337B61FF" Offset="0"/>
+                        <GradientStop Color="#007B61FF" Offset="1"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+
+                <!-- Logo badge -->
+                <Border x:Name="Logo" Width="76" Height="76" CornerRadius="19"
+                        HorizontalAlignment="Center" Opacity="0"
+                        RenderTransformOrigin="0.5,0.5">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#FF8F79FF" Offset="0"/>
+                            <GradientStop Color="#FF5B3FE0" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.Effect>
+                        <DropShadowEffect Color="#FF7B61FF" BlurRadius="30" ShadowDepth="0" Opacity="0.6"/>
+                    </Border.Effect>
+                    <Border.RenderTransform>
+                        <ScaleTransform x:Name="LogoScale" ScaleX="0.82" ScaleY="0.82"/>
+                    </Border.RenderTransform>
+                    <TextBlock Text="S" Foreground="White" FontSize="46" FontWeight="Bold"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Margin="0,-4,0,0"/>
+                </Border>
+
+                <!-- Wordmark -->
+                <TextBlock x:Name="Wordmark" HorizontalAlignment="Center" Margin="0,22,0,0"
+                           FontSize="27" FontWeight="Bold" Opacity="0"
+                           Foreground="{StaticResource TextPrimary}"
+                           RenderTransformOrigin="0.5,0.5">
+                    <TextBlock.RenderTransform>
+                        <TranslateTransform x:Name="WordmarkShift" Y="10"/>
+                    </TextBlock.RenderTransform>
+                    <Run Text="Start"/><Run Text="UPs" Foreground="{StaticResource Accent}"/>
+                </TextBlock>
+
+                <TextBlock x:Name="Tagline" Text="Pick your apps. Install them all at once."
+                           HorizontalAlignment="Center" Margin="0,6,0,0"
+                           FontSize="12.5" Opacity="0"
+                           Foreground="{StaticResource TextMuted}"
+                           RenderTransformOrigin="0.5,0.5">
+                    <TextBlock.RenderTransform>
+                        <TranslateTransform x:Name="TaglineShift" Y="10"/>
+                    </TextBlock.RenderTransform>
+                </TextBlock>
+
+                <!-- Indeterminate sweeping loader -->
+                <Border x:Name="LoaderTrack" Width="240" Height="4" CornerRadius="2"
+                        Background="#FF23232C" Margin="0,30,0,0" Opacity="0"
+                        ClipToBounds="True" HorizontalAlignment="Center">
+                    <Border Width="88" Height="4" CornerRadius="2" HorizontalAlignment="Left">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#007B61FF" Offset="0"/>
+                                <GradientStop Color="#FF8F79FF" Offset="0.5"/>
+                                <GradientStop Color="#007B61FF" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.RenderTransform>
+                            <TranslateTransform x:Name="Sweep" X="-88"/>
+                        </Border.RenderTransform>
+                    </Border>
+                </Border>
+
+                <!-- Rotating loading message. Its opacity is driven purely from
+                     code-behind, so no storyboard here can contend with it. -->
+                <TextBlock x:Name="LoadingMessage" Text=""
+                           HorizontalAlignment="Center" Margin="0,16,0,0"
+                           FontSize="11.5" Opacity="0" Height="16"
+                           Foreground="#FF6F6F80"/>
+            </StackPanel>
+
+            <TextBlock Text="v1.0.0" FontSize="10.5" Margin="0,0,18,12"
+                       HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                       Foreground="#FF55555F"/>
+        </Grid>
+    </Border>
+
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <!-- Card fades up -->
+                    <DoubleAnimation Storyboard.TargetName="Card"
+                                     Storyboard.TargetProperty="Opacity"
+                                     To="1" Duration="0:0:0.35"/>
+
+                    <!-- Logo pops in -->
+                    <DoubleAnimation Storyboard.TargetName="Logo"
+                                     Storyboard.TargetProperty="Opacity"
+                                     To="1" Duration="0:0:0.45" BeginTime="0:0:0.10"/>
+                    <DoubleAnimation Storyboard.TargetName="LogoScale"
+                                     Storyboard.TargetProperty="ScaleX"
+                                     To="1" Duration="0:0:0.55" BeginTime="0:0:0.10">
+                        <DoubleAnimation.EasingFunction>
+                            <BackEase EasingMode="EaseOut" Amplitude="0.6"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <DoubleAnimation Storyboard.TargetName="LogoScale"
+                                     Storyboard.TargetProperty="ScaleY"
+                                     To="1" Duration="0:0:0.55" BeginTime="0:0:0.10">
+                        <DoubleAnimation.EasingFunction>
+                            <BackEase EasingMode="EaseOut" Amplitude="0.6"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+
+                    <!-- Wordmark, then tagline, staggered -->
+                    <DoubleAnimation Storyboard.TargetName="Wordmark"
+                                     Storyboard.TargetProperty="Opacity"
+                                     To="1" Duration="0:0:0.4" BeginTime="0:0:0.32"/>
+                    <DoubleAnimation Storyboard.TargetName="WordmarkShift"
+                                     Storyboard.TargetProperty="Y"
+                                     To="0" Duration="0:0:0.45" BeginTime="0:0:0.32">
+                        <DoubleAnimation.EasingFunction>
+                            <CubicEase EasingMode="EaseOut"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+
+                    <DoubleAnimation Storyboard.TargetName="Tagline"
+                                     Storyboard.TargetProperty="Opacity"
+                                     To="1" Duration="0:0:0.4" BeginTime="0:0:0.46"/>
+                    <DoubleAnimation Storyboard.TargetName="TaglineShift"
+                                     Storyboard.TargetProperty="Y"
+                                     To="0" Duration="0:0:0.45" BeginTime="0:0:0.46">
+                        <DoubleAnimation.EasingFunction>
+                            <CubicEase EasingMode="EaseOut"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+
+                    <!-- Loader appears and sweeps forever -->
+                    <DoubleAnimation Storyboard.TargetName="LoaderTrack"
+                                     Storyboard.TargetProperty="Opacity"
+                                     To="1" Duration="0:0:0.4" BeginTime="0:0:0.60"/>
+                    <DoubleAnimation Storyboard.TargetName="Sweep"
+                                     Storyboard.TargetProperty="X"
+                                     From="-88" To="240" Duration="0:0:1.15"
+                                     BeginTime="0:0:0.60" RepeatBehavior="Forever">
+                        <DoubleAnimation.EasingFunction>
+                            <SineEase EasingMode="EaseInOut"/>
+                        </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
+</Window>
