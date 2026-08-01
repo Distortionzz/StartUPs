@@ -10,9 +10,11 @@ public partial class App : Application
 {
     /// <summary>
     /// Keep the splash up at least this long so it never flickers past. Sized to let
-    /// all five loading messages land: 5 x 1.1s of message time, plus the intro.
+    /// all three loading messages land: 3 x 1.0s, plus the entrance animation.
+    /// Deliberately short - the single-file exe already spends a few seconds
+    /// self-extracting before any of this code runs.
     /// </summary>
-    private static readonly TimeSpan MinimumSplashTime = TimeSpan.FromMilliseconds(5600);
+    private static readonly TimeSpan MinimumSplashTime = TimeSpan.FromMilliseconds(3200);
 
     protected override async void OnStartup(StartupEventArgs e)
     {

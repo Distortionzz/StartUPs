@@ -10,7 +10,7 @@ namespace StartUPs;
 public partial class SplashWindow : Window
 {
     /// <summary>How long each loading message stays on screen.</summary>
-    private static readonly TimeSpan MessageInterval = TimeSpan.FromMilliseconds(1100);
+    private static readonly TimeSpan MessageInterval = TimeSpan.FromMilliseconds(1000);
 
     /// <summary>Shuffled each launch so the splash never reads identically twice.</summary>
     private static readonly string[] MessagePool =
@@ -46,7 +46,7 @@ public partial class SplashWindow : Window
 
     private void BuildMessageQueue()
     {
-        var shuffled = MessagePool.OrderBy(_ => Random.Shared.Next()).Take(4);
+        var shuffled = MessagePool.OrderBy(_ => Random.Shared.Next()).Take(2);
 
         foreach (var message in shuffled)
             _messages.Enqueue(message);

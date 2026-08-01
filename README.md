@@ -15,6 +15,7 @@ Setting up a fresh Windows install means visiting a dozen websites, dodging the 
 ## Features
 
 - **48 apps across 6 categories** — Gaming, Development, Browsers, Media, Utilities, Communication
+- **Real icons for every app** — no placeholder tiles anywhere
 - **One UAC prompt for the whole batch** — not one per app
 - **Live download progress** with a real transfer-speed readout
 - **Skips what you already have** — checks each app before installing
@@ -22,6 +23,14 @@ Setting up a fresh Windows install means visiting a dozen websites, dodging the 
 - **Instant search** across app names, descriptions, and package IDs
 - **Cancel any time** — stops the current download and leaves the rest untouched
 - **Single portable .exe** — no installer, no .NET runtime required
+
+![Splash screen](docs/splash.png)
+
+## Download
+
+Grab `StartUPs.exe` from the [latest release](https://github.com/Distortionzz/StartUPs/releases). It is a single self-contained file — no installer, nothing to unzip.
+
+On first run Windows SmartScreen will warn about an unrecognised app, because the executable is unsigned. Click **More info → Run anyway**.
 
 ## How it works
 
@@ -100,19 +109,35 @@ StartUPs/
   docs/                      screenshots
   StartUPs/
     catalog.json             the app catalog (embedded at build time)
+    icons.json               vector brand glyphs, keyed by winget ID
+    Assets/AppIcons/         PNG icons for apps with no vector glyph
     Models/                  AppEntry, Catalog, InstallState
     Services/
       CatalogService.cs      loads the embedded catalog
+      IconService.cs         resolves each app's icon
       WingetService.cs       runs winget, parses live progress
     Theme.xaml               dark palette and control styles
+    SplashWindow.xaml(.cs)   animated startup splash
     MainWindow.xaml(.cs)     layout, filtering, install queue
     app.manifest             requests administrator at launch
     icon.ico                 app icon, 7 sizes
 ```
 
+## App icons
+
+Every app in the catalog shows its genuine icon, from one of two sources:
+
+- **36 apps** use vector brand glyphs from [Simple Icons](https://simpleicons.org/), stored as raw path data in `icons.json` and rendered natively by WPF. They stay crisp at any size and cost about 61 KB in total.
+- **12 apps** with no brand glyph — mostly niche utilities such as HWiNFO, GPU-Z and Everything — ship as PNGs extracted from their official installers.
+
+Brand colours that are close to black are automatically swapped for a light substitute, so marks like Steam's stay visible against the dark theme.
+
+Simple Icons is CC0; the brand marks themselves remain trademarks of their respective owners.
+
 ## Known limitations
 
 - **SmartScreen warning.** The executable is unsigned, so Windows shows "Windows protected your PC" on first run. Click *More info -> Run anyway*. Removing this requires a paid code-signing certificate.
+- **Startup takes a few seconds.** The single-file build compresses the whole .NET runtime into one executable, and Windows must unpack it before any code runs — roughly 3 seconds warm, longer on a first run. The splash screen only appears after that, so it cannot cover it. Turning off `EnableCompressionInSingleFile` would roughly halve the wait at the cost of doubling the file size.
 - **Progress covers downloading only.** Once a file is downloaded, winget hands off to the vendor's own installer, which reports no progress — the bar sits at 100% showing "Installing..." until it finishes.
 - **Microsoft Store apps excluded.** Apps that exist only in the Store (NVIDIA App, WhatsApp) are left out of the catalog because Store packages do not reliably install silently.
 
