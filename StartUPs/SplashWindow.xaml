@@ -103,7 +103,7 @@
                            Foreground="#FF6F6F80"/>
             </StackPanel>
 
-            <TextBlock Text="v1.0.0" FontSize="10.5" Margin="0,0,18,12"
+            <TextBlock x:Name="VersionText" FontSize="10.5" Margin="0,0,18,12"
                        HorizontalAlignment="Right" VerticalAlignment="Bottom"
                        Foreground="#FF55555F"/>
         </Grid>

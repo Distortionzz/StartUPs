@@ -35,6 +35,10 @@ public partial class SplashWindow : Window
     {
         InitializeComponent();
 
+        // Read the version from the assembly so it can never fall out of step
+        // with the build the way a hardcoded string does.
+        VersionText.Text = $"v{Services.UpdateService.CurrentVersion.ToString(3)}";
+
         BuildMessageQueue();
 
         _timer.Interval = MessageInterval;
