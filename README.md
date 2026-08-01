@@ -141,6 +141,16 @@ Simple Icons is CC0; the brand marks themselves remain trademarks of their respe
 - **Progress covers downloading only.** Once a file is downloaded, winget hands off to the vendor's own installer, which reports no progress — the bar sits at 100% showing "Installing..." until it finishes.
 - **Microsoft Store apps excluded.** Apps that exist only in the Store (NVIDIA App, WhatsApp) are left out of the catalog because Store packages do not reliably install silently.
 
+## Licence
+
+StartUPs is released under the [MIT Licence](LICENSE) — free to use, modify and redistribute, including commercially, provided the copyright notice is kept.
+
+This covers **StartUPs' own source code only**. It does not extend to:
+
+- The applications in the catalog, each governed by its own licence
+- Brand names, logos and trademarks, which remain the property of their owners
+- Icons extracted from third-party installers, which remain the property of those vendors
+
 ## Policies
 
 - [Privacy Policy](PRIVACY.md) — StartUPs collects nothing; what winget contacts and why
