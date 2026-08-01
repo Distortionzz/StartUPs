@@ -159,6 +159,7 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
@@ -179,8 +180,32 @@
                                       Visibility="Collapsed"/>
                             </Border>
 
+                            <!-- App icon: brand glyph where we have one, otherwise a letter tile -->
+                            <Border Grid.Column="1" Grid.Row="0" Width="38" Height="38"
+                                    CornerRadius="10" Background="#FF24242D"
+                                    VerticalAlignment="Center" Margin="0,0,14,0">
+                                <Grid>
+                                    <!-- Real app icon, extracted from the official installer -->
+                                    <Image Source="{Binding Bitmap}" Width="27" Height="27"
+                                           RenderOptions.BitmapScalingMode="HighQuality"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Visibility="{Binding HasBitmap, Converter={StaticResource BoolToVis}}"/>
+                                    <!-- Vector brand glyph -->
+                                    <Path Data="{Binding Glyph}" Fill="{Binding AccentBrush}"
+                                          Stretch="Uniform" Width="19" Height="19"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          Visibility="{Binding HasGlyph, Converter={StaticResource BoolToVis}}"/>
+                                    <!-- Last-resort letter tile; no catalog app should reach this -->
+                                    <TextBlock Text="{Binding Initial}"
+                                               Foreground="{Binding AccentBrush}"
+                                               FontSize="17" FontWeight="Bold"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                                               Visibility="{Binding HasNoIcon, Converter={StaticResource BoolToVis}}"/>
+                                </Grid>
+                            </Border>
+
                             <!-- Name + description -->
-                            <StackPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Center">
+                            <StackPanel Grid.Column="2" Grid.Row="0" VerticalAlignment="Center">
                                 <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="SemiBold"
                                            Foreground="{StaticResource TextPrimary}"/>
                                 <TextBlock Text="{Binding Description}" FontSize="12" Margin="0,3,0,0"
@@ -188,7 +213,7 @@
                             </StackPanel>
 
                             <!-- Live install status -->
-                            <TextBlock x:Name="StatusLabel" Grid.Column="2" Grid.Row="0"
+                            <TextBlock x:Name="StatusLabel" Grid.Column="3" Grid.Row="0"
                                        Text="{Binding StatusText}"
                                        FontSize="12" FontWeight="SemiBold"
                                        Foreground="{StaticResource TextMuted}" VerticalAlignment="Center"
@@ -196,7 +221,7 @@
                                        Visibility="{Binding HasStatus, Converter={StaticResource BoolToVis}}"/>
 
                             <!-- Green download bar, only while bytes are moving -->
-                            <ProgressBar Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                            <ProgressBar Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2"
                                          Style="{StaticResource DownloadBar}"
                                          Value="{Binding DownloadPercent, Mode=OneWay}"
                                          Margin="0,11,0,2"

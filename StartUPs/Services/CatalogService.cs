@@ -23,13 +23,19 @@ public static class CatalogService
         var catalog = JsonSerializer.Deserialize<Catalog>(stream, options)
             ?? throw new InvalidOperationException("catalog.json could not be parsed.");
 
-        // Stamp each app with its parent category so the UI can group and filter a flat list.
+        IconService.Load();
+
+        // Stamp each app with its parent category so the UI can group and filter a
+        // flat list, and attach its icon (brand glyph, or a generated letter tile).
         foreach (var category in catalog.Categories)
         {
             foreach (var app in category.Apps)
             {
                 app.CategoryId = category.Id;
                 app.CategoryName = category.Name;
+                app.Bitmap = IconService.GetBitmap(app.WingetId);
+                app.Glyph = IconService.GetGlyph(app.WingetId);
+                app.AccentBrush = IconService.GetAccent(app.WingetId);
             }
         }
 

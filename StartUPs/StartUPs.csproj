@@ -34,6 +34,10 @@
   <!-- Bake the app catalog into the .exe so the published build is a single file -->
   <ItemGroup>
     <EmbeddedResource Include="catalog.json" />
+    <EmbeddedResource Include="icons.json" />
+    <!-- Raster icons for apps with no vector brand glyph, extracted from their
+         official installers. Resource name: StartUPs.Assets.AppIcons.<file>.png -->
+    <EmbeddedResource Include="Assets\AppIcons\*.png" />
   </ItemGroup>
 
 </Project>

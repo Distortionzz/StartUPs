@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using System.Windows.Media;
 
 namespace StartUPs.Models;
 
@@ -16,6 +17,29 @@ public class AppEntry : INotifyPropertyChanged
     // --- Filled in at load time, not stored in the catalog ---
     [JsonIgnore] public string CategoryId { get; set; } = "";
     [JsonIgnore] public string CategoryName { get; set; } = "";
+
+    /// <summary>The app's brand glyph, or null when we don't have one bundled.</summary>
+    [JsonIgnore] public Geometry? Glyph { get; set; }
+
+    /// <summary>Raster icon, used for apps with no vector glyph.</summary>
+    [JsonIgnore] public ImageSource? Bitmap { get; set; }
+
+    [JsonIgnore] public bool HasBitmap => Bitmap is not null;
+
+    /// <summary>Vector glyph is used only when there is no bitmap.</summary>
+    [JsonIgnore] public bool HasGlyph => Bitmap is null && Glyph is not null;
+
+    /// <summary>True when neither an icon nor a glyph exists - should never happen.</summary>
+    [JsonIgnore] public bool HasNoIcon => Bitmap is null && Glyph is null;
+
+    /// <summary>Brand colour where known, otherwise a deterministic palette colour.</summary>
+    [JsonIgnore] public Brush AccentBrush { get; set; } = Brushes.Gray;
+
+    /// <summary>The letter drawn when there is no brand glyph.</summary>
+    [JsonIgnore]
+    public string Initial => string.IsNullOrEmpty(Name)
+        ? "?"
+        : Name[..1].ToUpperInvariant();
 
     private bool _isSelected;
 
