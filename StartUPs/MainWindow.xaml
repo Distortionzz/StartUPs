@@ -88,9 +88,18 @@
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
                 <ItemsControl x:Name="AppList" Margin="0,0,10,0">
+                    <!-- Cards flow into as many columns as the window is wide.
+                         When grouping is on this panel lays out the cards inside
+                         each category; GroupStyle.Panel below stacks the groups. -->
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <CheckBox Style="{StaticResource AppCard}"
+                                      Width="376" Margin="0,0,10,10"
                                       IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
@@ -101,6 +110,12 @@
                                     <TextBlock Text="{Binding Name}" Style="{StaticResource GroupHeaderText}"/>
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
+                            <!-- Categories run down the page, one after another -->
+                            <GroupStyle.Panel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </GroupStyle.Panel>
                         </GroupStyle>
                     </ItemsControl.GroupStyle>
                 </ItemsControl>
