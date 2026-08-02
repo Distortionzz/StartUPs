@@ -559,7 +559,8 @@ public partial class MainWindow : Window
 
                     app.RequestedLocation = location ?? "";
 
-                    var result = await WingetService.InstallAsync(app.WingetId, reporter, token, location);
+                    var result = await WingetService.InstallAsync(
+                        app.WingetId, reporter, token, location, app.LocationProperty);
 
                     if (result.Succeeded)
                     {

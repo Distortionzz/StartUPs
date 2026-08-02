@@ -21,6 +21,18 @@ public class AppEntry : INotifyPropertyChanged
     /// </summary>
     public bool SupportsLocation { get; set; }
 
+    /// <summary>
+    /// The MSI property to set instead of using winget's --location, for packages
+    /// that anchor their install folder somewhere --location cannot reach.
+    ///
+    /// winget's --location sets TARGETDIR. An MSI whose app folder hangs off
+    /// ProgramFiles64Folder ignores that completely, because that is a system
+    /// property resolved by Windows. Such packages usually still expose their own
+    /// property - INSTALLDIR by convention - which can be set directly. Empty for
+    /// everything else, which uses --location as normal.
+    /// </summary>
+    public string LocationProperty { get; set; } = "";
+
     // --- Filled in at load time, not stored in the catalog ---
     [JsonIgnore] public string CategoryId { get; set; } = "";
     [JsonIgnore] public string CategoryName { get; set; } = "";

@@ -110,14 +110,21 @@ public static class WingetService
     /// </summary>
     public static Task<WingetResult> InstallAsync(
         string wingetId, IProgress<DownloadSample>? progress, CancellationToken ct,
-        string? installLocation = null)
+        string? installLocation = null, string? locationProperty = null)
     {
         var args =
             $"install --id {wingetId} --exact --source winget --silent " +
             "--accept-package-agreements --accept-source-agreements --disable-interactivity";
 
         if (!string.IsNullOrWhiteSpace(installLocation))
-            args += $" --location \"{installLocation}\"";
+        {
+            // Some MSIs anchor their folder to a system property that --location
+            // (which only sets TARGETDIR) cannot move. Those name the property to
+            // set instead, and it is appended to the installer's own arguments.
+            args += string.IsNullOrWhiteSpace(locationProperty)
+                ? $" --location \"{installLocation}\""
+                : $" --custom \"{locationProperty}=\\\"{installLocation}\\\"\"";
+        }
 
         return RunAsync(args, progress, ct);
     }

@@ -8,7 +8,7 @@
       "icon": "🎮",
       "apps": [
         { "wingetId": "Valve.Steam", "name": "Steam", "description": "The biggest PC game store and library.", "essential": true, "supportsLocation": true },
-        { "wingetId": "EpicGames.EpicGamesLauncher", "name": "Epic Games Launcher", "description": "Epic's store, free weekly games, and Unreal Engine.", "essential": true, "supportsLocation": false },
+        { "wingetId": "EpicGames.EpicGamesLauncher", "name": "Epic Games Launcher", "description": "Epic's store, free weekly games, and Unreal Engine.", "essential": true, "supportsLocation": true, "locationProperty": "INSTALLDIR" },
         { "wingetId": "ElectronicArts.EADesktop", "name": "EA App", "description": "Launcher for EA titles like Battlefield and The Sims.", "essential": false, "supportsLocation": false },
         { "wingetId": "Ubisoft.Connect", "name": "Ubisoft Connect", "description": "Launcher for Assassin's Creed, Far Cry, and more.", "essential": false, "supportsLocation": true },
         { "wingetId": "GOG.Galaxy", "name": "GOG Galaxy", "description": "DRM-free game store and unified library manager.", "essential": false, "supportsLocation": true },
