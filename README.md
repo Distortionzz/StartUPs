@@ -14,12 +14,12 @@ Setting up a fresh Windows install means visiting a dozen websites, dodging the 
 
 ## Features
 
-- **48 apps across 6 categories** — Gaming, Development, Browsers, Media, Utilities, Communication
-- **Real icons for every app** — no placeholder tiles anywhere
+- **94 apps across 11 categories** — Gaming, Development, Browsers, Media, Utilities, Communication, Imaging, Documents, Security, Online Storage, Runtimes
+- **Real icons for almost every app** — 87 of 94 carry the genuine brand mark
 - **One UAC prompt for the whole batch** — not one per app
 - **Live download progress** with a real transfer-speed readout
 - **Skips what you already have** — checks each app before installing
-- **Select Essentials** — one click ticks the 14 apps almost everyone wants
+- **Select Essentials** — one click ticks the 19 apps almost everyone wants
 - **Instant search** across app names, descriptions, and package IDs
 - **Cancel any time** — stops the current download and leaves the rest untouched
 - **Built-in updater** — checks GitHub on request, verifies the download's checksum, and restarts into the new version
@@ -126,10 +126,14 @@ StartUPs/
 
 ## App icons
 
-Every app in the catalog shows its genuine icon, from one of two sources:
+87 of the 94 apps show their genuine icon, from one of two sources:
 
-- **36 apps** use vector brand glyphs from [Simple Icons](https://simpleicons.org/), stored as raw path data in `icons.json` and rendered natively by WPF. They stay crisp at any size and cost about 61 KB in total.
-- **12 apps** with no brand glyph — mostly niche utilities such as HWiNFO, GPU-Z and Everything — ship as PNGs extracted from their official installers.
+- **56 apps** use vector brand glyphs from [Simple Icons](https://simpleicons.org/), stored as raw path data in `icons.json` and rendered natively by WPF. They stay crisp at any size and cost about 65 KB of path data in total.
+- **31 apps** with no brand glyph — mostly niche utilities such as HWiNFO, GPU-Z and Everything — ship as PNGs extracted from their official installers at 128x128.
+
+The remaining **7** fall back to a generated letter tile, coloured deterministically so an app always looks the same. This is deliberate rather than a gap: their installers ship only the generic Inno Setup or Windows Installer icon, and a stock monitor graphic reads as broken in a way the letter tile does not. Getting real marks for WinMerge, MediaMonkey, WizTree, IrfanView and KeePass would need `innoextract` to unpack the Inno payload; the two VC++ Redistributables have no brand mark to find.
+
+Simple Icons has removed the Adobe, Microsoft, Amazon and Java marks following trademark requests, so those apps use extracted PNGs instead.
 
 Brand colours that are close to black are automatically swapped for a light substitute, so marks like Steam's stay visible against the dark theme.
 
@@ -140,7 +144,9 @@ Simple Icons is CC0; the brand marks themselves remain trademarks of their respe
 - **SmartScreen warning.** The executable is unsigned, so Windows shows "Windows protected your PC" on first run. Click *More info -> Run anyway*. Removing this requires a paid code-signing certificate.
 - **Startup takes a few seconds.** The single-file build compresses the whole .NET runtime into one executable, and Windows must unpack it before any code runs — roughly 3 seconds warm, longer on a first run. The splash screen only appears after that, so it cannot cover it. Turning off `EnableCompressionInSingleFile` would roughly halve the wait at the cost of doubling the file size.
 - **Progress covers downloading only.** Once a file is downloaded, winget hands off to the vendor's own installer, which reports no progress — the bar sits at 100% showing "Installing..." until it finishes.
-- **Microsoft Store apps excluded.** Apps that exist only in the Store (NVIDIA App, WhatsApp) are left out of the catalog because Store packages do not reliably install silently.
+- **Microsoft Store apps excluded.** Apps that exist only in the Store (NVIDIA App, WhatsApp, MusicBee) are left out of the catalog because Store packages do not reliably install silently.
+- **A few apps have no winget package at all.** FileZilla, for instance, is absent from the winget source entirely, so it cannot be offered no matter how popular it is.
+- **Upstream packages can break.** A winget manifest points at the vendor's own URL and pins the installer's hash, so a vendor who silently replaces a file breaks the package for everyone until the manifest is updated. AIMP (hash mismatch) and RealVNC Viewer (dead URL) were both dropped from the catalog for this reason — winget correctly refuses to install either.
 
 ## Licence
 
