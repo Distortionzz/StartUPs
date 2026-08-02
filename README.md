@@ -19,7 +19,7 @@ Setting up a fresh Windows install means visiting a dozen websites, dodging the 
 - **One UAC prompt for the whole batch** — not one per app
 - **Live download progress** with a real transfer-speed readout
 - **Skips what you already have** — checks each app before installing
-- **Sees what is already on the PC** — one winget call at startup badges every app it detects
+- **Sees what is already on the PC** — one winget call badges every app it detects, refreshed after every run
 - **Uninstall too** — the Installed view lists what StartUPs can see and removes any of it in one batch
 - **Choose where things land** — point 63 of the 94 apps at another drive, each into its own subfolder
 - **Select Essentials** — one click ticks the 19 apps almost everyone wants
@@ -75,7 +75,9 @@ Apps that cannot be redirected are simply installed normally; the footer says ho
 
 The **Installed** entry in the sidebar shows only the catalog apps StartUPs can find on this PC. Tick any of them and the footer button turns red: **Uninstall Selected**.
 
-Detection is a single `winget export` call made in the background at startup, not one check per app — across a 94-app catalog that would mean 94 process launches. It costs about two seconds and never blocks the window.
+Detection is a single `winget export` call made in the background, not one check per app — across a 94-app catalog that would mean 94 process launches. It costs about two seconds and never blocks the window.
+
+It runs at startup, again after any install or uninstall run finishes, and on demand via **Refresh** in the Installed view — useful when something was installed outside StartUPs while it was open.
 
 Removal is deliberately harder to do by accident than installing:
 

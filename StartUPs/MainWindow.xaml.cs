@@ -94,6 +94,22 @@ public partial class MainWindow : Window
 
     // ---------------------------------------------------------------- detection
 
+    private async void RefreshInstalled_Click(object sender, RoutedEventArgs e)
+    {
+        RefreshInstalledButton.IsEnabled = false;
+        RefreshInstalledButton.Content = "Checking...";
+
+        try
+        {
+            await RefreshInstalledAsync();
+        }
+        finally
+        {
+            RefreshInstalledButton.Content = "Refresh";
+            RefreshInstalledButton.IsEnabled = true;
+        }
+    }
+
     /// <summary>Asks winget what is on this PC and badges the matching cards.</summary>
     private async Task RefreshInstalledAsync()
     {
@@ -223,6 +239,11 @@ public partial class MainWindow : Window
 
         EssentialsButton.Visibility = installSide;
         LocationArea.Visibility = installSide;
+
+        // Re-checking the PC only makes sense on the view that reports it.
+        RefreshInstalledButton.Visibility = _activeCategoryId == InstalledCategoryId
+            ? Visibility.Visible
+            : Visibility.Collapsed;
 
         UpdateSummary();
     }
@@ -562,7 +583,19 @@ public partial class MainWindow : Window
             _cancelSource = null;
         }
 
+        // Anything that just landed is on the PC now, so badge it straight away
+        // rather than making the user relaunch to see it.
+        foreach (var app in queue)
+        {
+            if (app.State is InstallState.Installed or InstallState.AlreadyInstalled)
+                app.IsInstalled = true;
+        }
+
+        UpdateSummary();
         ShowRunSummary(queue);
+
+        // Then re-read the PC, so the badges reflect winget rather than our guess.
+        _ = RefreshInstalledAsync();
     }
 
     private void EnterInstallMode(List<AppEntry> queue)
@@ -578,6 +611,7 @@ public partial class MainWindow : Window
         BodyGrid.IsEnabled = false;          // stop selection changing mid-run
         EssentialsButton.IsEnabled = false;
         ClearButton.IsEnabled = false;
+        RefreshInstalledButton.IsEnabled = false;
 
         InstallButton.Content = "Cancel";
         InstallButton.IsEnabled = true;
@@ -595,6 +629,7 @@ public partial class MainWindow : Window
         BodyGrid.IsEnabled = true;
         EssentialsButton.IsEnabled = true;
         ClearButton.IsEnabled = true;
+        RefreshInstalledButton.IsEnabled = true;
         ProgressArea.Visibility = Visibility.Collapsed;
         ProgressLabel.Text = "";
 

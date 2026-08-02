@@ -249,6 +249,9 @@
                         <Button x:Name="EssentialsButton" Content="Select Essentials"
                                 Style="{StaticResource GhostButton}"
                                 Margin="0,0,8,0" Click="SelectEssentials_Click"/>
+                        <Button x:Name="RefreshInstalledButton" Content="Refresh"
+                                Style="{StaticResource GhostButton}" Visibility="Collapsed"
+                                Margin="0,0,8,0" Click="RefreshInstalled_Click"/>
                         <Button x:Name="ClearButton" Content="Clear" Style="{StaticResource GhostButton}"
                                 Margin="0,0,8,0" Click="Clear_Click"/>
                         <Button x:Name="InstallButton" Content="Install Selected"
