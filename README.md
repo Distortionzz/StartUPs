@@ -25,7 +25,7 @@ Setting up a fresh Windows install means visiting a dozen websites, dodging the 
 - **Select Essentials** — one click ticks the 19 apps almost everyone wants
 - **Instant search** across app names, descriptions, and package IDs
 - **Cancel any time** — stops the current download and leaves the rest untouched
-- **Built-in updater** — checks GitHub on request, verifies the download's checksum, and restarts into the new version
+- **Built-in updater** — checks GitHub on request, verifies the download's checksum, stages it behind the same permissions as the app, and restarts into the new version
 - **Single portable .exe** — no installer, no .NET runtime required
 
 ![Splash screen](docs/splash.png)
@@ -41,18 +41,24 @@ On first run Windows SmartScreen will warn about an unrecognised app, because th
 StartUPs never hosts or downloads installers itself. It drives [**winget**](https://learn.microsoft.com/windows/package-manager/), Microsoft's package manager built into Windows, which fetches each app from the vendor's own official URL and verifies its hash before running it.
 
 ```
-Click Install
+Launch
    |
    +-- UAC elevation prompt (once)
+   +-- winget export -> what is already on this PC, badged in the background
    |
-   +-- Sequential queue, one app at a time:
-   |     winget list    -> already installed? skip it
-   |     winget install -> silent, progress parsed live
-   |
-   +-- Summary: installed / already present / cancelled / failed
+Click Install                          Click Uninstall (Installed view)
+   |                                      |
+   +-- Sequential queue:                  +-- Confirm the queue by name
+   |     winget list    -> skip if here   |
+   |     winget install -> silent,        +-- Sequential queue:
+   |                       live progress  |     winget uninstall -> silent
+   |                                      |
+   +-- Summary -----------------------------+-- Summary
+                     |
+                     +-- re-check what is installed
 ```
 
-Installs run one at a time because winget takes a machine-wide lock — parallel installs would simply fail.
+Runs happen one app at a time because winget takes a machine-wide lock — parallel installs would simply fail.
 
 ## Choosing where apps install
 
@@ -158,14 +164,15 @@ StartUPs/
     catalog.json             the app catalog (embedded at build time)
     icons.json               vector brand glyphs, keyed by winget ID
     Assets/AppIcons/         PNG icons for apps with no vector glyph
-    Models/                  AppEntry, Catalog, InstallState
+    Models/                  AppEntry, Catalog, InstallState, UpdateInfo
     Services/
       CatalogService.cs      loads the embedded catalog
       IconService.cs         resolves each app's icon
-      WingetService.cs       runs winget, parses live progress
+      WingetService.cs       runs winget: install, uninstall, detect
+      UpdateService.cs       checks GitHub, verifies and stages a new build
     Theme.xaml               dark palette and control styles
     SplashWindow.xaml(.cs)   animated startup splash
-    MainWindow.xaml(.cs)     layout, filtering, install queue
+    MainWindow.xaml(.cs)     layout, filtering, install and uninstall queues
     app.manifest             requests administrator at launch
     icon.ico                 app icon, 7 sizes
 ```
