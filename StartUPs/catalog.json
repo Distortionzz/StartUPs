@@ -26,7 +26,7 @@
         { "wingetId": "Git.Git", "name": "Git", "description": "Version control — required by most dev tools.", "essential": true, "supportsLocation": true },
         { "wingetId": "Anthropic.Claude", "name": "Claude", "description": "Anthropic's AI assistant for desktop.", "essential": true, "supportsLocation": false },
         { "wingetId": "Python.Python.3.12", "name": "Python 3.12", "description": "Popular scripting and automation language.", "essential": false, "supportsLocation": false },
-        { "wingetId": "OpenJS.NodeJS", "name": "Node.js", "description": "JavaScript runtime for web and app development.", "essential": false, "supportsLocation": false },
+        { "wingetId": "OpenJS.NodeJS", "name": "Node.js", "description": "JavaScript runtime for web and app development.", "essential": false, "supportsLocation": true, "locationProperty": "INSTALLDIR" },
         { "wingetId": "Unity.UnityHub", "name": "Unity Hub", "description": "Manages Unity Editor versions and projects.", "essential": false, "supportsLocation": true },
         { "wingetId": "Docker.DockerDesktop", "name": "Docker Desktop", "description": "Run apps in isolated containers.", "essential": false, "supportsLocation": false },
         { "wingetId": "Notepad++.Notepad++", "name": "Notepad++", "description": "Fast text editor with syntax highlighting.", "essential": false, "supportsLocation": true },
@@ -36,7 +36,7 @@
         { "wingetId": "Postman.Postman", "name": "Postman", "description": "Test and debug REST APIs.", "essential": false, "supportsLocation": false },
         { "wingetId": "Anysphere.Cursor", "name": "Cursor", "description": "AI-first code editor built on VS Code.", "essential": false, "supportsLocation": true },
         { "wingetId": "EclipseFoundation.Eclipse.Java", "name": "Eclipse IDE", "description": "Long-standing IDE for Java development.", "essential": false, "supportsLocation": true },
-        { "wingetId": "PuTTY.PuTTY", "name": "PuTTY", "description": "SSH and telnet client for remote servers.", "essential": false, "supportsLocation": false },
+        { "wingetId": "PuTTY.PuTTY", "name": "PuTTY", "description": "SSH and telnet client for remote servers.", "essential": false, "supportsLocation": true, "locationProperty": "INSTALLDIR" },
         { "wingetId": "WinSCP.WinSCP", "name": "WinSCP", "description": "Drag-and-drop SFTP and FTP file transfers.", "essential": false, "supportsLocation": true },
         { "wingetId": "WinMerge.WinMerge", "name": "WinMerge", "description": "Compares and merges files and folders.", "essential": false, "supportsLocation": true }
       ]
@@ -76,9 +76,9 @@
       "name": "Utilities",
       "icon": "🔧",
       "apps": [
-        { "wingetId": "7zip.7zip", "name": "7-Zip", "description": "Opens ZIP, RAR, and 7z archives.", "essential": true, "supportsLocation": false },
+        { "wingetId": "7zip.7zip", "name": "7-Zip", "description": "Opens ZIP, RAR, and 7z archives.", "essential": true, "supportsLocation": true, "locationProperty": "INSTALLDIR" },
         { "wingetId": "Microsoft.PowerToys", "name": "PowerToys", "description": "Microsoft's power-user utility bundle for Windows.", "essential": true, "supportsLocation": false },
-        { "wingetId": "voidtools.Everything", "name": "Everything", "description": "Instantly searches every file on your PC.", "essential": true, "supportsLocation": false },
+        { "wingetId": "voidtools.Everything", "name": "Everything", "description": "Instantly searches every file on your PC.", "essential": true, "supportsLocation": true, "locationProperty": "INSTALLDIR" },
         { "wingetId": "REALiX.HWiNFO", "name": "HWiNFO", "description": "Detailed hardware monitoring and sensor readouts.", "essential": true, "supportsLocation": true },
         { "wingetId": "CPUID.CPU-Z", "name": "CPU-Z", "description": "Reports CPU, RAM, and motherboard specs.", "essential": false, "supportsLocation": true },
         { "wingetId": "TechPowerUp.GPU-Z", "name": "GPU-Z", "description": "Detailed graphics card information and monitoring.", "essential": false, "supportsLocation": false },
@@ -89,14 +89,14 @@
         { "wingetId": "Rufus.Rufus", "name": "Rufus", "description": "Creates bootable USB drives.", "essential": false, "supportsLocation": true },
         { "wingetId": "RevoUninstaller.RevoUninstaller", "name": "Revo Uninstaller", "description": "Removes programs along with leftover files.", "essential": false, "supportsLocation": true },
         { "wingetId": "Giorgiotani.Peazip", "name": "PeaZip", "description": "Open source archive manager with strong encryption.", "essential": false, "supportsLocation": true },
-        { "wingetId": "WinDirStat.WinDirStat", "name": "WinDirStat", "description": "Visual map of what is filling up your drives.", "essential": false, "supportsLocation": false },
+        { "wingetId": "WinDirStat.WinDirStat", "name": "WinDirStat", "description": "Visual map of what is filling up your drives.", "essential": false, "supportsLocation": true, "locationProperty": "INSTALLFOLDER" },
         { "wingetId": "AntibodySoftware.WizTree", "name": "WizTree", "description": "Finds your largest files in seconds.", "essential": false, "supportsLocation": true },
         { "wingetId": "CodeSector.TeraCopy", "name": "TeraCopy", "description": "Faster file copying with verification and resume.", "essential": false, "supportsLocation": false },
         { "wingetId": "qBittorrent.qBittorrent", "name": "qBittorrent", "description": "Open source BitTorrent client with no ads.", "essential": false, "supportsLocation": true },
-        { "wingetId": "TeamViewer.TeamViewer", "name": "TeamViewer", "description": "Remote desktop access and support.", "essential": false, "supportsLocation": false },
+        { "wingetId": "TeamViewer.TeamViewer", "name": "TeamViewer", "description": "Remote desktop access and support.", "essential": false, "supportsLocation": true, "locationProperty": "INSTALLFOLDER" },
         { "wingetId": "AnyDesk.AnyDesk", "name": "AnyDesk", "description": "Lightweight, low-latency remote desktop.", "essential": false, "supportsLocation": false },
-        { "wingetId": "RealVNC.VNCServer", "name": "RealVNC Server", "description": "Lets other machines remotely control this PC.", "essential": false, "supportsLocation": false },
-        { "wingetId": "GlavSoft.TightVNC", "name": "TightVNC", "description": "Free remote control over VNC.", "essential": false, "supportsLocation": false },
+        { "wingetId": "RealVNC.VNCServer", "name": "RealVNC Server", "description": "Lets other machines remotely control this PC.", "essential": false, "supportsLocation": true, "locationProperty": "INSTALLDIR" },
+        { "wingetId": "GlavSoft.TightVNC", "name": "TightVNC", "description": "Free remote control over VNC.", "essential": false, "supportsLocation": true, "locationProperty": "INSTALLDIR" },
         { "wingetId": "Open-Shell.Open-Shell-Menu", "name": "Open-Shell", "description": "Brings back the classic Windows Start menu.", "essential": false, "supportsLocation": false },
         { "wingetId": "Google.EarthPro", "name": "Google Earth Pro", "description": "Explore satellite imagery of the whole planet.", "essential": false, "supportsLocation": false },
         { "wingetId": "NVAccess.NVDA", "name": "NVDA", "description": "Free screen reader for blind and low-vision users.", "essential": false, "supportsLocation": true }
@@ -123,7 +123,7 @@
         { "wingetId": "ShareX.ShareX", "name": "ShareX", "description": "Screenshots, screen recording, and instant sharing.", "essential": true, "supportsLocation": true },
         { "wingetId": "dotPDN.PaintDotNet", "name": "Paint.NET", "description": "Simple image editor that sits between Paint and Photoshop.", "essential": false, "supportsLocation": false },
         { "wingetId": "KDE.Krita", "name": "Krita", "description": "Digital painting studio for artists and illustrators.", "essential": false, "supportsLocation": true },
-        { "wingetId": "Inkscape.Inkscape", "name": "Inkscape", "description": "Vector graphics editor, an Illustrator alternative.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Inkscape.Inkscape", "name": "Inkscape", "description": "Vector graphics editor, an Illustrator alternative.", "essential": false, "supportsLocation": true, "locationProperty": "INSTALL_ROOT" },
         { "wingetId": "Greenshot.Greenshot", "name": "Greenshot", "description": "Quick screenshots with built-in annotation.", "essential": false, "supportsLocation": true },
         { "wingetId": "IrfanSkiljan.IrfanView", "name": "IrfanView", "description": "Very fast image viewer and batch converter.", "essential": false, "supportsLocation": false },
         { "wingetId": "XnSoft.XnViewMP", "name": "XnView MP", "description": "Image browser supporting hundreds of formats.", "essential": false, "supportsLocation": true },
@@ -135,7 +135,7 @@
       "name": "Documents",
       "icon": "📄",
       "apps": [
-        { "wingetId": "TheDocumentFoundation.LibreOffice", "name": "LibreOffice", "description": "Free office suite — documents, spreadsheets, slides.", "essential": true, "supportsLocation": false },
+        { "wingetId": "TheDocumentFoundation.LibreOffice", "name": "LibreOffice", "description": "Free office suite — documents, spreadsheets, slides.", "essential": true, "supportsLocation": true, "locationProperty": "INSTALLLOCATION" },
         { "wingetId": "SumatraPDF.SumatraPDF", "name": "SumatraPDF", "description": "Extremely fast, minimal PDF and ebook reader.", "essential": true, "supportsLocation": false },
         { "wingetId": "Adobe.Acrobat.Reader.64-bit", "name": "Adobe Acrobat Reader", "description": "The standard PDF reader from Adobe.", "essential": false, "supportsLocation": false },
         { "wingetId": "Foxit.FoxitReader", "name": "Foxit PDF Reader", "description": "Lightweight PDF reader with annotation tools.", "essential": false, "supportsLocation": false }
@@ -169,8 +169,8 @@
         { "wingetId": "Microsoft.VCRedist.2015+.x86", "name": "VC++ Redist x86", "description": "32-bit Visual C++ runtime for older software.", "essential": true, "supportsLocation": false },
         { "wingetId": "Microsoft.DotNet.DesktopRuntime.8", "name": ".NET Desktop Runtime 8", "description": "Runs desktop apps built on .NET 8.", "essential": false, "supportsLocation": false },
         { "wingetId": "Microsoft.DotNet.DesktopRuntime.9", "name": ".NET Desktop Runtime 9", "description": "Runs desktop apps built on .NET 9.", "essential": false, "supportsLocation": false },
-        { "wingetId": "EclipseAdoptium.Temurin.21.JDK", "name": "Temurin JDK 21", "description": "Open source Java development kit, LTS release.", "essential": false, "supportsLocation": false },
-        { "wingetId": "Amazon.Corretto.21.JDK", "name": "Amazon Corretto 21", "description": "Amazon's free, production-ready Java distribution.", "essential": false, "supportsLocation": false }
+        { "wingetId": "EclipseAdoptium.Temurin.21.JDK", "name": "Temurin JDK 21", "description": "Open source Java development kit, LTS release.", "essential": false, "supportsLocation": true, "locationProperty": "INSTALLDIR" },
+        { "wingetId": "Amazon.Corretto.21.JDK", "name": "Amazon Corretto 21", "description": "Amazon's free, production-ready Java distribution.", "essential": false, "supportsLocation": true, "locationProperty": "INSTALLDIR" }
       ]
     }
   ]

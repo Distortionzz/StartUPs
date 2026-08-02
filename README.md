@@ -21,7 +21,7 @@ Setting up a fresh Windows install means visiting a dozen websites, dodging the 
 - **Skips what you already have** — checks each app before installing
 - **Sees what is already on the PC** — one winget call badges every app it detects, refreshed after every run
 - **Uninstall too** — the Installed view lists what StartUPs can see and removes any of it in one batch
-- **Choose where things land** — point 40 of the 94 apps at another drive, each into its own subfolder, and get told about any that ignored it
+- **Choose where things land** — point 53 of the 94 apps at another drive, each into its own subfolder, and get told about any that ignored it
 - **Select Essentials** — one click ticks the 19 apps almost everyone wants
 - **Instant search** across app names, descriptions, and package IDs
 - **Cancel any time** — stops the current download and leaves the rest untouched
@@ -75,18 +75,27 @@ winget hands the path over as whatever switch that installer family expects. Whe
 | Inno Setup | `/DIR=` | ✅ handled by Inno itself |
 | NSIS | `/D=` | ✅ handled by NSIS itself |
 | portable | winget places the file | ✅ winget is in control |
-| MSI / WiX | `TARGETDIR` | ⚠️ only if the author wired it up |
+| MSI / WiX | `TARGETDIR` | ⚠️ usually not — see below |
 | burn | forwarded to a nested installer | ⚠️ depends on that installer |
 | exe, MSIX | not supported at all | ❌ |
 
-Only the first three are claimed. Epic Games Launcher is the case that made this concrete: it is a WiX MSI, so it *looks* redirectable, but its MSI hardcodes `C:\Program Files (x86)\Epic Games` and quietly ignores `TARGETDIR`.
+**Why `TARGETDIR` usually fails.** An MSI builds its install path from a chain of directories. Epic Games Launcher's looks like this:
+
+```
+INSTALLDIR  <  SELECTEDINSTALLFOLDER  <  ProgramFiles64Folder  <  TARGETDIR
+```
+
+`ProgramFiles64Folder` is a *system* folder that Windows resolves itself, and it always lands on the real Program Files. Setting `TARGETDIR` therefore never reaches the app's own folder. That is how the package is built, not a winget bug.
+
+Those MSIs almost always expose their own public property — `INSTALLDIR`, `INSTALLFOLDER`, `INSTALLLOCATION`, `INSTALL_ROOT` — which *can* be set. A catalog entry names it with `locationProperty`, and StartUPs passes that with `--custom` instead of `--location`. Thirteen apps use one, read out of their own MSIs.
 
 | | Apps |
 |---|---|
-| Can be redirected (inno, nullsoft, portable) | **40** |
-| Install where their own installer decides | **54** |
+| Redirected natively (inno, nullsoft, portable) | **40** |
+| Redirected via an MSI property override | **13** |
+| Install where their own installer decides | **41** |
 
-Apps that cannot be redirected are simply installed normally, and the footer says how many that is before you start.
+Chrome and Zoom were checked and genuinely expose nothing settable. EA App, Python and PowerToys ship `burn` bundles, whose payload was not inspected. Apps that cannot be redirected are simply installed normally, and the footer says how many that is before you start.
 
 Because even an Inno or NSIS installer can ignore the switch, StartUPs checks afterwards. Any app that installed successfully but left the chosen folder missing is listed at the end of the run, so a silent miss is visible rather than something you find weeks later.
 
@@ -161,13 +170,19 @@ winget search --id Valve.Steam --exact
 
 Set `essential` to `true` to include the app in the **Select Essentials** one-click preset.
 
-Set `supportsLocation` to `true` only for `inno`, `nullsoft` and `portable` installers, which implement the directory switch themselves. Check the type first:
+Set `supportsLocation` to `true` for `inno`, `nullsoft` and `portable` installers, which implement the directory switch themselves. Check the type first:
 
 ```
 winget show --id Valve.Steam --exact | findstr /i "Installer Type"
 ```
 
-Leave it `false` for everything else — including `msi`, `wix` and `burn`. Those accept a path and may quietly ignore it, which is worse than not offering the choice. The file is embedded into the executable at build time, so rebuild after editing.
+For an `msi` or `wix` package, `--location` alone will usually be ignored, so open the MSI and find the public directory property its install folder hangs from — an all-uppercase id such as `INSTALLDIR` — then add it as `locationProperty`:
+
+```json
+{ "wingetId": "7zip.7zip", "name": "7-Zip", "supportsLocation": true, "locationProperty": "INSTALLDIR" }
+```
+
+Leave both off for `exe`, `msix` and `burn`. A path that is accepted and quietly ignored is worse than not offering the choice. The file is embedded into the executable at build time, so rebuild after editing.
 
 ## Project layout
 
