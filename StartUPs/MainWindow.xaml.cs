@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
@@ -203,6 +204,7 @@ public partial class MainWindow : Window
         EmptyMessage.Visibility = Visibility.Collapsed;
         SearchArea.Visibility = Visibility.Hidden;
         FooterActions.Visibility = Visibility.Collapsed;
+        LocationArea.Visibility = Visibility.Collapsed;
         SelectionSummary.Text = $"StartUPs {UpdateService.CurrentVersion.ToString(3)}";
     }
 
@@ -213,17 +215,74 @@ public partial class MainWindow : Window
         SearchArea.Visibility = Visibility.Visible;
         FooterActions.Visibility = Visibility.Visible;
 
-        // "Select Essentials" is an install-side shortcut; it has no meaning
-        // when the list is showing what is already on the PC.
-        EssentialsButton.Visibility = _activeCategoryId == InstalledCategoryId
+        // "Select Essentials" and the install root are install-side controls;
+        // neither means anything when the list shows what is already on the PC.
+        var installSide = _activeCategoryId == InstalledCategoryId
             ? Visibility.Collapsed
             : Visibility.Visible;
+
+        EssentialsButton.Visibility = installSide;
+        LocationArea.Visibility = installSide;
 
         UpdateSummary();
     }
 
     /// <summary>True when the footer's primary button should remove rather than install.</summary>
     private bool IsUninstallMode => _activeCategoryId == InstalledCategoryId;
+
+    // ---------------------------------------------------------------- install location
+
+    /// <summary>Where to install to. Empty means every app uses its own default.</summary>
+    private string _installRoot = "";
+
+    private void BrowseLocation_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Microsoft.Win32.OpenFolderDialog
+        {
+            Title = "Choose where to install apps",
+            Multiselect = false
+        };
+
+        if (_installRoot.Length > 0 && Directory.Exists(_installRoot))
+            dialog.InitialDirectory = _installRoot;
+
+        if (dialog.ShowDialog(this) != true) return;
+
+        _installRoot = dialog.FolderName;
+        ApplyLocationDisplay();
+    }
+
+    private void ResetLocation_Click(object sender, RoutedEventArgs e)
+    {
+        _installRoot = "";
+        ApplyLocationDisplay();
+    }
+
+    private void ApplyLocationDisplay()
+    {
+        bool custom = _installRoot.Length > 0;
+
+        LocationText.Text = custom ? _installRoot : "Each app's own default location";
+        LocationText.Foreground = (Brush)FindResource(custom ? "TextPrimary" : "TextMuted");
+        ResetLocationButton.Visibility = custom ? Visibility.Visible : Visibility.Collapsed;
+
+        if (!custom)
+        {
+            LocationNote.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        // Be upfront that this cannot apply to the whole catalog: winget rejects
+        // --location for installers with no directory switch of their own.
+        int supported = _apps.Count(a => a.SupportsLocation);
+        int fixedPlace = _apps.Count - supported;
+
+        LocationNote.Text =
+            $"{supported} of {_apps.Count} apps can be redirected here, each into its own subfolder. " +
+            $"The other {fixedPlace} install where their own installer decides. " +
+            "Game libraries are set inside Steam, Epic and the other launchers, not here.";
+        LocationNote.Visibility = Visibility.Visible;
+    }
 
     private void SearchInput_TextChanged(object sender, TextChangedEventArgs e)
     {
@@ -465,7 +524,13 @@ public partial class MainWindow : Window
                             : $"{app.Name}  -  {done + 1} of {queue.Count}";
                     });
 
-                    var result = await WingetService.InstallAsync(app.WingetId, reporter, token);
+                    // Only apps whose installer takes a directory switch get the
+                    // custom root; passing it to the rest would just fail them.
+                    string? location = _installRoot.Length > 0 && app.SupportsLocation
+                        ? WingetService.BuildInstallPath(_installRoot, app.Name)
+                        : null;
+
+                    var result = await WingetService.InstallAsync(app.WingetId, reporter, token, location);
 
                     if (result.Succeeded)
                     {

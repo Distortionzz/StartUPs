@@ -21,6 +21,7 @@ Setting up a fresh Windows install means visiting a dozen websites, dodging the 
 - **Skips what you already have** — checks each app before installing
 - **Sees what is already on the PC** — one winget call at startup badges every app it detects
 - **Uninstall too** — the Installed view lists what StartUPs can see and removes any of it in one batch
+- **Choose where things land** — point 63 of the 94 apps at another drive, each into its own subfolder
 - **Select Essentials** — one click ticks the 19 apps almost everyone wants
 - **Instant search** across app names, descriptions, and package IDs
 - **Cancel any time** — stops the current download and leaves the rest untouched
@@ -52,6 +53,23 @@ Click Install
 ```
 
 Installs run one at a time because winget takes a machine-wide lock — parallel installs would simply fail.
+
+## Choosing where apps install
+
+**Install to** in the footer sets a root folder — useful when Windows sits on a small SSD and there is a roomier drive alongside it. Leave it blank and every app goes wherever its own installer puts it.
+
+winget installs into exactly the path it is given, so each app gets its own subfolder under the root rather than all of them landing in one directory.
+
+This cannot apply to the whole catalog. winget's `--location` only works for installers that expose a directory switch — Inno Setup's `/DIR=`, NSIS's `/D=`, MSI's `TARGETDIR`. Plain `.exe` and MSIX packages hardcode their own destination, and winget fails the install outright rather than quietly ignoring the flag. Each catalog entry therefore carries a `supportsLocation` flag, checked against the live winget source:
+
+| | Apps |
+|---|---|
+| Can be redirected (inno, nullsoft, wix, burn, msi, portable) | **63** |
+| Fixed by their own installer (exe, msix) | **31** |
+
+Apps that cannot be redirected are simply installed normally; the footer says how many that is before you start.
+
+**Games are the exception worth knowing.** Steam, Epic, EA, Ubisoft, GOG and Battle.net each manage their own library folders, and that is where the hundreds of gigabytes actually go. Moving the launcher does not move the games — set the library location inside the launcher instead.
 
 ## Removing apps
 
@@ -101,7 +119,8 @@ The catalog is plain data, so adding apps needs no code changes. Edit [`StartUPs
   "wingetId": "Valve.Steam",
   "name": "Steam",
   "description": "The biggest PC game store and library.",
-  "essential": true
+  "essential": true,
+  "supportsLocation": true
 }
 ```
 
@@ -117,7 +136,15 @@ Confirm it resolves exactly before adding it:
 winget search --id Valve.Steam --exact
 ```
 
-Set `essential` to `true` to include the app in the **Select Essentials** one-click preset. The file is embedded into the executable at build time, so rebuild after editing.
+Set `essential` to `true` to include the app in the **Select Essentials** one-click preset.
+
+Set `supportsLocation` to `true` only if the installer accepts a target directory. Check its type first — `inno`, `nullsoft`, `wix`, `burn`, `msi` and `portable` do; `exe` and `msix` do not:
+
+```
+winget show --id Valve.Steam --exact | findstr /i "Installer Type"
+```
+
+Getting this wrong fails the install rather than falling back to the default. The file is embedded into the executable at build time, so rebuild after editing.
 
 ## Project layout
 

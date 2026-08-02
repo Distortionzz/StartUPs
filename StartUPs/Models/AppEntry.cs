@@ -14,6 +14,13 @@ public class AppEntry : INotifyPropertyChanged
     public string Description { get; set; } = "";
     public bool Essential { get; set; }
 
+    /// <summary>
+    /// True when this package's installer accepts a target directory. Roughly two
+    /// thirds of the catalog do; plain .exe and MSIX packages hardcode their own
+    /// location and winget fails outright if --location is passed to them.
+    /// </summary>
+    public bool SupportsLocation { get; set; }
+
     // --- Filled in at load time, not stored in the catalog ---
     [JsonIgnore] public string CategoryId { get; set; } = "";
     [JsonIgnore] public string CategoryName { get; set; } = "";

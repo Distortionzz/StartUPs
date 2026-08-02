@@ -101,13 +101,40 @@ public static class WingetService
         return result.Succeeded && result.Output.Contains(wingetId, StringComparison.OrdinalIgnoreCase);
     }
 
-    /// <summary>Installs one package silently, reporting live download progress.</summary>
+    /// <summary>
+    /// Installs one package silently, reporting live download progress.
+    ///
+    /// <paramref name="installLocation"/> is passed to winget's --location, which
+    /// only works for installer types exposing a directory switch. Pass null for
+    /// anything else: winget errors out rather than falling back to the default.
+    /// </summary>
     public static Task<WingetResult> InstallAsync(
-        string wingetId, IProgress<DownloadSample>? progress, CancellationToken ct)
-        => RunAsync(
+        string wingetId, IProgress<DownloadSample>? progress, CancellationToken ct,
+        string? installLocation = null)
+    {
+        var args =
             $"install --id {wingetId} --exact --source winget --silent " +
-            "--accept-package-agreements --accept-source-agreements --disable-interactivity",
-            progress, ct);
+            "--accept-package-agreements --accept-source-agreements --disable-interactivity";
+
+        if (!string.IsNullOrWhiteSpace(installLocation))
+            args += $" --location \"{installLocation}\"";
+
+        return RunAsync(args, progress, ct);
+    }
+
+    /// <summary>Characters Windows will not accept in a folder name.</summary>
+    private static readonly char[] InvalidNameChars = Path.GetInvalidFileNameChars();
+
+    /// <summary>
+    /// winget installs into exactly the path it is given, so every app needs its
+    /// own subfolder - otherwise the whole selection lands in one directory.
+    /// </summary>
+    public static string BuildInstallPath(string root, string appName)
+    {
+        var safe = new string(appName.Where(c => !InvalidNameChars.Contains(c)).ToArray()).Trim();
+        if (safe.Length == 0) safe = "App";
+        return Path.Combine(root, safe);
+    }
 
     /// <summary>Removes one package silently.</summary>
     public static Task<WingetResult> UninstallAsync(string wingetId, CancellationToken ct)

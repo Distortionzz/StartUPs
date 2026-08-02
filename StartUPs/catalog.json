@@ -7,13 +7,13 @@
       "name": "Gaming",
       "icon": "🎮",
       "apps": [
-        { "wingetId": "Valve.Steam", "name": "Steam", "description": "The biggest PC game store and library.", "essential": true },
-        { "wingetId": "EpicGames.EpicGamesLauncher", "name": "Epic Games Launcher", "description": "Epic's store, free weekly games, and Unreal Engine.", "essential": true },
-        { "wingetId": "ElectronicArts.EADesktop", "name": "EA App", "description": "Launcher for EA titles like Battlefield and The Sims.", "essential": false },
-        { "wingetId": "Ubisoft.Connect", "name": "Ubisoft Connect", "description": "Launcher for Assassin's Creed, Far Cry, and more.", "essential": false },
-        { "wingetId": "GOG.Galaxy", "name": "GOG Galaxy", "description": "DRM-free game store and unified library manager.", "essential": false },
-        { "wingetId": "Blizzard.BattleNet", "name": "Battle.net", "description": "Launcher for Blizzard games and Call of Duty.", "essential": false },
-        { "wingetId": "Playnite.Playnite", "name": "Playnite", "description": "Combines every launcher into one game library.", "essential": false }
+        { "wingetId": "Valve.Steam", "name": "Steam", "description": "The biggest PC game store and library.", "essential": true, "supportsLocation": true },
+        { "wingetId": "EpicGames.EpicGamesLauncher", "name": "Epic Games Launcher", "description": "Epic's store, free weekly games, and Unreal Engine.", "essential": true, "supportsLocation": true },
+        { "wingetId": "ElectronicArts.EADesktop", "name": "EA App", "description": "Launcher for EA titles like Battlefield and The Sims.", "essential": false, "supportsLocation": true },
+        { "wingetId": "Ubisoft.Connect", "name": "Ubisoft Connect", "description": "Launcher for Assassin's Creed, Far Cry, and more.", "essential": false, "supportsLocation": true },
+        { "wingetId": "GOG.Galaxy", "name": "GOG Galaxy", "description": "DRM-free game store and unified library manager.", "essential": false, "supportsLocation": true },
+        { "wingetId": "Blizzard.BattleNet", "name": "Battle.net", "description": "Launcher for Blizzard games and Call of Duty.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Playnite.Playnite", "name": "Playnite", "description": "Combines every launcher into one game library.", "essential": false, "supportsLocation": true }
       ]
     },
     {
@@ -21,24 +21,24 @@
       "name": "Development",
       "icon": "💻",
       "apps": [
-        { "wingetId": "Microsoft.VisualStudioCode", "name": "Visual Studio Code", "description": "Lightweight, extensible code editor.", "essential": true },
-        { "wingetId": "Microsoft.VisualStudio.2022.Community", "name": "Visual Studio 2022", "description": "Full IDE for C#, C++, and Unity development.", "essential": false },
-        { "wingetId": "Git.Git", "name": "Git", "description": "Version control — required by most dev tools.", "essential": true },
-        { "wingetId": "Anthropic.Claude", "name": "Claude", "description": "Anthropic's AI assistant for desktop.", "essential": true },
-        { "wingetId": "Python.Python.3.12", "name": "Python 3.12", "description": "Popular scripting and automation language.", "essential": false },
-        { "wingetId": "OpenJS.NodeJS", "name": "Node.js", "description": "JavaScript runtime for web and app development.", "essential": false },
-        { "wingetId": "Unity.UnityHub", "name": "Unity Hub", "description": "Manages Unity Editor versions and projects.", "essential": false },
-        { "wingetId": "Docker.DockerDesktop", "name": "Docker Desktop", "description": "Run apps in isolated containers.", "essential": false },
-        { "wingetId": "Notepad++.Notepad++", "name": "Notepad++", "description": "Fast text editor with syntax highlighting.", "essential": false },
-        { "wingetId": "JetBrains.Toolbox", "name": "JetBrains Toolbox", "description": "Installer for Rider, IntelliJ, PyCharm, and more.", "essential": false },
-        { "wingetId": "GitHub.GitHubDesktop", "name": "GitHub Desktop", "description": "Visual Git client for GitHub repositories.", "essential": false },
-        { "wingetId": "Microsoft.WindowsTerminal", "name": "Windows Terminal", "description": "Modern tabbed terminal for PowerShell and more.", "essential": false },
-        { "wingetId": "Postman.Postman", "name": "Postman", "description": "Test and debug REST APIs.", "essential": false },
-        { "wingetId": "Anysphere.Cursor", "name": "Cursor", "description": "AI-first code editor built on VS Code.", "essential": false },
-        { "wingetId": "EclipseFoundation.Eclipse.Java", "name": "Eclipse IDE", "description": "Long-standing IDE for Java development.", "essential": false },
-        { "wingetId": "PuTTY.PuTTY", "name": "PuTTY", "description": "SSH and telnet client for remote servers.", "essential": false },
-        { "wingetId": "WinSCP.WinSCP", "name": "WinSCP", "description": "Drag-and-drop SFTP and FTP file transfers.", "essential": false },
-        { "wingetId": "WinMerge.WinMerge", "name": "WinMerge", "description": "Compares and merges files and folders.", "essential": false }
+        { "wingetId": "Microsoft.VisualStudioCode", "name": "Visual Studio Code", "description": "Lightweight, extensible code editor.", "essential": true, "supportsLocation": true },
+        { "wingetId": "Microsoft.VisualStudio.2022.Community", "name": "Visual Studio 2022", "description": "Full IDE for C#, C++, and Unity development.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Git.Git", "name": "Git", "description": "Version control — required by most dev tools.", "essential": true, "supportsLocation": true },
+        { "wingetId": "Anthropic.Claude", "name": "Claude", "description": "Anthropic's AI assistant for desktop.", "essential": true, "supportsLocation": false },
+        { "wingetId": "Python.Python.3.12", "name": "Python 3.12", "description": "Popular scripting and automation language.", "essential": false, "supportsLocation": true },
+        { "wingetId": "OpenJS.NodeJS", "name": "Node.js", "description": "JavaScript runtime for web and app development.", "essential": false, "supportsLocation": true },
+        { "wingetId": "Unity.UnityHub", "name": "Unity Hub", "description": "Manages Unity Editor versions and projects.", "essential": false, "supportsLocation": true },
+        { "wingetId": "Docker.DockerDesktop", "name": "Docker Desktop", "description": "Run apps in isolated containers.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Notepad++.Notepad++", "name": "Notepad++", "description": "Fast text editor with syntax highlighting.", "essential": false, "supportsLocation": true },
+        { "wingetId": "JetBrains.Toolbox", "name": "JetBrains Toolbox", "description": "Installer for Rider, IntelliJ, PyCharm, and more.", "essential": false, "supportsLocation": false },
+        { "wingetId": "GitHub.GitHubDesktop", "name": "GitHub Desktop", "description": "Visual Git client for GitHub repositories.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Microsoft.WindowsTerminal", "name": "Windows Terminal", "description": "Modern tabbed terminal for PowerShell and more.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Postman.Postman", "name": "Postman", "description": "Test and debug REST APIs.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Anysphere.Cursor", "name": "Cursor", "description": "AI-first code editor built on VS Code.", "essential": false, "supportsLocation": true },
+        { "wingetId": "EclipseFoundation.Eclipse.Java", "name": "Eclipse IDE", "description": "Long-standing IDE for Java development.", "essential": false, "supportsLocation": true },
+        { "wingetId": "PuTTY.PuTTY", "name": "PuTTY", "description": "SSH and telnet client for remote servers.", "essential": false, "supportsLocation": true },
+        { "wingetId": "WinSCP.WinSCP", "name": "WinSCP", "description": "Drag-and-drop SFTP and FTP file transfers.", "essential": false, "supportsLocation": true },
+        { "wingetId": "WinMerge.WinMerge", "name": "WinMerge", "description": "Compares and merges files and folders.", "essential": false, "supportsLocation": true }
       ]
     },
     {
@@ -46,11 +46,11 @@
       "name": "Browsers",
       "icon": "🌐",
       "apps": [
-        { "wingetId": "Google.Chrome", "name": "Google Chrome", "description": "The most widely used web browser.", "essential": true },
-        { "wingetId": "Mozilla.Firefox", "name": "Mozilla Firefox", "description": "Privacy-focused open source browser.", "essential": false },
-        { "wingetId": "Brave.Brave", "name": "Brave", "description": "Chromium browser with built-in ad blocking.", "essential": false },
-        { "wingetId": "Opera.OperaGX", "name": "Opera GX", "description": "Gaming browser with CPU and RAM limiters.", "essential": false },
-        { "wingetId": "Vivaldi.Vivaldi", "name": "Vivaldi", "description": "Highly customisable browser for power users.", "essential": false }
+        { "wingetId": "Google.Chrome", "name": "Google Chrome", "description": "The most widely used web browser.", "essential": true, "supportsLocation": true },
+        { "wingetId": "Mozilla.Firefox", "name": "Mozilla Firefox", "description": "Privacy-focused open source browser.", "essential": false, "supportsLocation": true },
+        { "wingetId": "Brave.Brave", "name": "Brave", "description": "Chromium browser with built-in ad blocking.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Opera.OperaGX", "name": "Opera GX", "description": "Gaming browser with CPU and RAM limiters.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Vivaldi.Vivaldi", "name": "Vivaldi", "description": "Highly customisable browser for power users.", "essential": false, "supportsLocation": false }
       ]
     },
     {
@@ -58,17 +58,17 @@
       "name": "Media",
       "icon": "🎵",
       "apps": [
-        { "wingetId": "VideoLAN.VLC", "name": "VLC Media Player", "description": "Plays virtually any audio or video format.", "essential": true },
-        { "wingetId": "Spotify.Spotify", "name": "Spotify", "description": "Music and podcast streaming.", "essential": true },
-        { "wingetId": "OBSProject.OBSStudio", "name": "OBS Studio", "description": "Free streaming and screen recording software.", "essential": true },
-        { "wingetId": "Audacity.Audacity", "name": "Audacity", "description": "Multi-track audio editor and recorder.", "essential": false },
-        { "wingetId": "HandBrake.HandBrake", "name": "HandBrake", "description": "Convert and compress video files.", "essential": false },
-        { "wingetId": "GIMP.GIMP", "name": "GIMP", "description": "Free image editor, a Photoshop alternative.", "essential": false },
-        { "wingetId": "BlenderFoundation.Blender", "name": "Blender", "description": "3D modeling, animation, and rendering suite.", "essential": false },
-        { "wingetId": "CodecGuide.K-LiteCodecPack.Standard", "name": "K-Lite Codec Pack", "description": "Codecs that let Windows play almost any video.", "essential": false },
-        { "wingetId": "Apple.iTunes", "name": "iTunes", "description": "Apple's music library and device sync tool.", "essential": false },
-        { "wingetId": "PeterPawlowski.foobar2000", "name": "foobar2000", "description": "Lightweight, endlessly configurable audio player.", "essential": false },
-        { "wingetId": "VentisMedia.MediaMonkey.5", "name": "MediaMonkey", "description": "Media library manager for large music collections.", "essential": false }
+        { "wingetId": "VideoLAN.VLC", "name": "VLC Media Player", "description": "Plays virtually any audio or video format.", "essential": true, "supportsLocation": true },
+        { "wingetId": "Spotify.Spotify", "name": "Spotify", "description": "Music and podcast streaming.", "essential": true, "supportsLocation": false },
+        { "wingetId": "OBSProject.OBSStudio", "name": "OBS Studio", "description": "Free streaming and screen recording software.", "essential": true, "supportsLocation": true },
+        { "wingetId": "Audacity.Audacity", "name": "Audacity", "description": "Multi-track audio editor and recorder.", "essential": false, "supportsLocation": true },
+        { "wingetId": "HandBrake.HandBrake", "name": "HandBrake", "description": "Convert and compress video files.", "essential": false, "supportsLocation": true },
+        { "wingetId": "GIMP.GIMP", "name": "GIMP", "description": "Free image editor, a Photoshop alternative.", "essential": false, "supportsLocation": true },
+        { "wingetId": "BlenderFoundation.Blender", "name": "Blender", "description": "3D modeling, animation, and rendering suite.", "essential": false, "supportsLocation": true },
+        { "wingetId": "CodecGuide.K-LiteCodecPack.Standard", "name": "K-Lite Codec Pack", "description": "Codecs that let Windows play almost any video.", "essential": false, "supportsLocation": true },
+        { "wingetId": "Apple.iTunes", "name": "iTunes", "description": "Apple's music library and device sync tool.", "essential": false, "supportsLocation": false },
+        { "wingetId": "PeterPawlowski.foobar2000", "name": "foobar2000", "description": "Lightweight, endlessly configurable audio player.", "essential": false, "supportsLocation": true },
+        { "wingetId": "VentisMedia.MediaMonkey.5", "name": "MediaMonkey", "description": "Media library manager for large music collections.", "essential": false, "supportsLocation": true }
       ]
     },
     {
@@ -76,30 +76,30 @@
       "name": "Utilities",
       "icon": "🔧",
       "apps": [
-        { "wingetId": "7zip.7zip", "name": "7-Zip", "description": "Opens ZIP, RAR, and 7z archives.", "essential": true },
-        { "wingetId": "Microsoft.PowerToys", "name": "PowerToys", "description": "Microsoft's power-user utility bundle for Windows.", "essential": true },
-        { "wingetId": "voidtools.Everything", "name": "Everything", "description": "Instantly searches every file on your PC.", "essential": true },
-        { "wingetId": "REALiX.HWiNFO", "name": "HWiNFO", "description": "Detailed hardware monitoring and sensor readouts.", "essential": true },
-        { "wingetId": "CPUID.CPU-Z", "name": "CPU-Z", "description": "Reports CPU, RAM, and motherboard specs.", "essential": false },
-        { "wingetId": "TechPowerUp.GPU-Z", "name": "GPU-Z", "description": "Detailed graphics card information and monitoring.", "essential": false },
-        { "wingetId": "CPUID.HWMonitor", "name": "HWMonitor", "description": "Tracks system temperatures, voltages, and fan speeds.", "essential": false },
-        { "wingetId": "Guru3D.Afterburner", "name": "MSI Afterburner", "description": "GPU overclocking and in-game performance overlay.", "essential": false },
-        { "wingetId": "CrystalDewWorld.CrystalDiskInfo", "name": "CrystalDiskInfo", "description": "Monitors SSD and hard drive health.", "essential": false },
-        { "wingetId": "RARLab.WinRAR", "name": "WinRAR", "description": "Classic archive utility for RAR files.", "essential": false },
-        { "wingetId": "Rufus.Rufus", "name": "Rufus", "description": "Creates bootable USB drives.", "essential": false },
-        { "wingetId": "RevoUninstaller.RevoUninstaller", "name": "Revo Uninstaller", "description": "Removes programs along with leftover files.", "essential": false },
-        { "wingetId": "Giorgiotani.Peazip", "name": "PeaZip", "description": "Open source archive manager with strong encryption.", "essential": false },
-        { "wingetId": "WinDirStat.WinDirStat", "name": "WinDirStat", "description": "Visual map of what is filling up your drives.", "essential": false },
-        { "wingetId": "AntibodySoftware.WizTree", "name": "WizTree", "description": "Finds your largest files in seconds.", "essential": false },
-        { "wingetId": "CodeSector.TeraCopy", "name": "TeraCopy", "description": "Faster file copying with verification and resume.", "essential": false },
-        { "wingetId": "qBittorrent.qBittorrent", "name": "qBittorrent", "description": "Open source BitTorrent client with no ads.", "essential": false },
-        { "wingetId": "TeamViewer.TeamViewer", "name": "TeamViewer", "description": "Remote desktop access and support.", "essential": false },
-        { "wingetId": "AnyDesk.AnyDesk", "name": "AnyDesk", "description": "Lightweight, low-latency remote desktop.", "essential": false },
-        { "wingetId": "RealVNC.VNCServer", "name": "RealVNC Server", "description": "Lets other machines remotely control this PC.", "essential": false },
-        { "wingetId": "GlavSoft.TightVNC", "name": "TightVNC", "description": "Free remote control over VNC.", "essential": false },
-        { "wingetId": "Open-Shell.Open-Shell-Menu", "name": "Open-Shell", "description": "Brings back the classic Windows Start menu.", "essential": false },
-        { "wingetId": "Google.EarthPro", "name": "Google Earth Pro", "description": "Explore satellite imagery of the whole planet.", "essential": false },
-        { "wingetId": "NVAccess.NVDA", "name": "NVDA", "description": "Free screen reader for blind and low-vision users.", "essential": false }
+        { "wingetId": "7zip.7zip", "name": "7-Zip", "description": "Opens ZIP, RAR, and 7z archives.", "essential": true, "supportsLocation": true },
+        { "wingetId": "Microsoft.PowerToys", "name": "PowerToys", "description": "Microsoft's power-user utility bundle for Windows.", "essential": true, "supportsLocation": true },
+        { "wingetId": "voidtools.Everything", "name": "Everything", "description": "Instantly searches every file on your PC.", "essential": true, "supportsLocation": true },
+        { "wingetId": "REALiX.HWiNFO", "name": "HWiNFO", "description": "Detailed hardware monitoring and sensor readouts.", "essential": true, "supportsLocation": true },
+        { "wingetId": "CPUID.CPU-Z", "name": "CPU-Z", "description": "Reports CPU, RAM, and motherboard specs.", "essential": false, "supportsLocation": true },
+        { "wingetId": "TechPowerUp.GPU-Z", "name": "GPU-Z", "description": "Detailed graphics card information and monitoring.", "essential": false, "supportsLocation": false },
+        { "wingetId": "CPUID.HWMonitor", "name": "HWMonitor", "description": "Tracks system temperatures, voltages, and fan speeds.", "essential": false, "supportsLocation": true },
+        { "wingetId": "Guru3D.Afterburner", "name": "MSI Afterburner", "description": "GPU overclocking and in-game performance overlay.", "essential": false, "supportsLocation": true },
+        { "wingetId": "CrystalDewWorld.CrystalDiskInfo", "name": "CrystalDiskInfo", "description": "Monitors SSD and hard drive health.", "essential": false, "supportsLocation": true },
+        { "wingetId": "RARLab.WinRAR", "name": "WinRAR", "description": "Classic archive utility for RAR files.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Rufus.Rufus", "name": "Rufus", "description": "Creates bootable USB drives.", "essential": false, "supportsLocation": true },
+        { "wingetId": "RevoUninstaller.RevoUninstaller", "name": "Revo Uninstaller", "description": "Removes programs along with leftover files.", "essential": false, "supportsLocation": true },
+        { "wingetId": "Giorgiotani.Peazip", "name": "PeaZip", "description": "Open source archive manager with strong encryption.", "essential": false, "supportsLocation": true },
+        { "wingetId": "WinDirStat.WinDirStat", "name": "WinDirStat", "description": "Visual map of what is filling up your drives.", "essential": false, "supportsLocation": true },
+        { "wingetId": "AntibodySoftware.WizTree", "name": "WizTree", "description": "Finds your largest files in seconds.", "essential": false, "supportsLocation": true },
+        { "wingetId": "CodeSector.TeraCopy", "name": "TeraCopy", "description": "Faster file copying with verification and resume.", "essential": false, "supportsLocation": false },
+        { "wingetId": "qBittorrent.qBittorrent", "name": "qBittorrent", "description": "Open source BitTorrent client with no ads.", "essential": false, "supportsLocation": true },
+        { "wingetId": "TeamViewer.TeamViewer", "name": "TeamViewer", "description": "Remote desktop access and support.", "essential": false, "supportsLocation": true },
+        { "wingetId": "AnyDesk.AnyDesk", "name": "AnyDesk", "description": "Lightweight, low-latency remote desktop.", "essential": false, "supportsLocation": false },
+        { "wingetId": "RealVNC.VNCServer", "name": "RealVNC Server", "description": "Lets other machines remotely control this PC.", "essential": false, "supportsLocation": true },
+        { "wingetId": "GlavSoft.TightVNC", "name": "TightVNC", "description": "Free remote control over VNC.", "essential": false, "supportsLocation": true },
+        { "wingetId": "Open-Shell.Open-Shell-Menu", "name": "Open-Shell", "description": "Brings back the classic Windows Start menu.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Google.EarthPro", "name": "Google Earth Pro", "description": "Explore satellite imagery of the whole planet.", "essential": false, "supportsLocation": false },
+        { "wingetId": "NVAccess.NVDA", "name": "NVDA", "description": "Free screen reader for blind and low-vision users.", "essential": false, "supportsLocation": true }
       ]
     },
     {
@@ -107,12 +107,12 @@
       "name": "Communication",
       "icon": "💬",
       "apps": [
-        { "wingetId": "Discord.Discord", "name": "Discord", "description": "Voice and text chat built for gamers.", "essential": true },
-        { "wingetId": "Zoom.Zoom", "name": "Zoom", "description": "Video meetings and conferencing.", "essential": false },
-        { "wingetId": "SlackTechnologies.Slack", "name": "Slack", "description": "Team messaging and collaboration.", "essential": false },
-        { "wingetId": "Telegram.TelegramDesktop", "name": "Telegram", "description": "Fast cloud-based messaging app.", "essential": false },
-        { "wingetId": "Microsoft.Teams", "name": "Microsoft Teams", "description": "Work chat, meetings, and file sharing.", "essential": false },
-        { "wingetId": "Mozilla.Thunderbird", "name": "Thunderbird", "description": "Mozilla's free email, calendar, and news client.", "essential": false }
+        { "wingetId": "Discord.Discord", "name": "Discord", "description": "Voice and text chat built for gamers.", "essential": true, "supportsLocation": false },
+        { "wingetId": "Zoom.Zoom", "name": "Zoom", "description": "Video meetings and conferencing.", "essential": false, "supportsLocation": true },
+        { "wingetId": "SlackTechnologies.Slack", "name": "Slack", "description": "Team messaging and collaboration.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Telegram.TelegramDesktop", "name": "Telegram", "description": "Fast cloud-based messaging app.", "essential": false, "supportsLocation": true },
+        { "wingetId": "Microsoft.Teams", "name": "Microsoft Teams", "description": "Work chat, meetings, and file sharing.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Mozilla.Thunderbird", "name": "Thunderbird", "description": "Mozilla's free email, calendar, and news client.", "essential": false, "supportsLocation": true }
       ]
     },
     {
@@ -120,14 +120,14 @@
       "name": "Imaging",
       "icon": "🎨",
       "apps": [
-        { "wingetId": "ShareX.ShareX", "name": "ShareX", "description": "Screenshots, screen recording, and instant sharing.", "essential": true },
-        { "wingetId": "dotPDN.PaintDotNet", "name": "Paint.NET", "description": "Simple image editor that sits between Paint and Photoshop.", "essential": false },
-        { "wingetId": "KDE.Krita", "name": "Krita", "description": "Digital painting studio for artists and illustrators.", "essential": false },
-        { "wingetId": "Inkscape.Inkscape", "name": "Inkscape", "description": "Vector graphics editor, an Illustrator alternative.", "essential": false },
-        { "wingetId": "Greenshot.Greenshot", "name": "Greenshot", "description": "Quick screenshots with built-in annotation.", "essential": false },
-        { "wingetId": "IrfanSkiljan.IrfanView", "name": "IrfanView", "description": "Very fast image viewer and batch converter.", "essential": false },
-        { "wingetId": "XnSoft.XnViewMP", "name": "XnView MP", "description": "Image browser supporting hundreds of formats.", "essential": false },
-        { "wingetId": "FastStone.Viewer", "name": "FastStone Image Viewer", "description": "Image viewer with editing and slideshow tools.", "essential": false }
+        { "wingetId": "ShareX.ShareX", "name": "ShareX", "description": "Screenshots, screen recording, and instant sharing.", "essential": true, "supportsLocation": true },
+        { "wingetId": "dotPDN.PaintDotNet", "name": "Paint.NET", "description": "Simple image editor that sits between Paint and Photoshop.", "essential": false, "supportsLocation": false },
+        { "wingetId": "KDE.Krita", "name": "Krita", "description": "Digital painting studio for artists and illustrators.", "essential": false, "supportsLocation": true },
+        { "wingetId": "Inkscape.Inkscape", "name": "Inkscape", "description": "Vector graphics editor, an Illustrator alternative.", "essential": false, "supportsLocation": true },
+        { "wingetId": "Greenshot.Greenshot", "name": "Greenshot", "description": "Quick screenshots with built-in annotation.", "essential": false, "supportsLocation": true },
+        { "wingetId": "IrfanSkiljan.IrfanView", "name": "IrfanView", "description": "Very fast image viewer and batch converter.", "essential": false, "supportsLocation": false },
+        { "wingetId": "XnSoft.XnViewMP", "name": "XnView MP", "description": "Image browser supporting hundreds of formats.", "essential": false, "supportsLocation": true },
+        { "wingetId": "FastStone.Viewer", "name": "FastStone Image Viewer", "description": "Image viewer with editing and slideshow tools.", "essential": false, "supportsLocation": true }
       ]
     },
     {
@@ -135,10 +135,10 @@
       "name": "Documents",
       "icon": "📄",
       "apps": [
-        { "wingetId": "TheDocumentFoundation.LibreOffice", "name": "LibreOffice", "description": "Free office suite — documents, spreadsheets, slides.", "essential": true },
-        { "wingetId": "SumatraPDF.SumatraPDF", "name": "SumatraPDF", "description": "Extremely fast, minimal PDF and ebook reader.", "essential": true },
-        { "wingetId": "Adobe.Acrobat.Reader.64-bit", "name": "Adobe Acrobat Reader", "description": "The standard PDF reader from Adobe.", "essential": false },
-        { "wingetId": "Foxit.FoxitReader", "name": "Foxit PDF Reader", "description": "Lightweight PDF reader with annotation tools.", "essential": false }
+        { "wingetId": "TheDocumentFoundation.LibreOffice", "name": "LibreOffice", "description": "Free office suite — documents, spreadsheets, slides.", "essential": true, "supportsLocation": true },
+        { "wingetId": "SumatraPDF.SumatraPDF", "name": "SumatraPDF", "description": "Extremely fast, minimal PDF and ebook reader.", "essential": true, "supportsLocation": false },
+        { "wingetId": "Adobe.Acrobat.Reader.64-bit", "name": "Adobe Acrobat Reader", "description": "The standard PDF reader from Adobe.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Foxit.FoxitReader", "name": "Foxit PDF Reader", "description": "Lightweight PDF reader with annotation tools.", "essential": false, "supportsLocation": false }
       ]
     },
     {
@@ -146,8 +146,8 @@
       "name": "Security",
       "icon": "🛡️",
       "apps": [
-        { "wingetId": "Malwarebytes.Malwarebytes", "name": "Malwarebytes", "description": "On-demand scanner for malware Defender misses.", "essential": false },
-        { "wingetId": "DominikReichl.KeePass", "name": "KeePass 2", "description": "Offline password manager with an encrypted database.", "essential": false }
+        { "wingetId": "Malwarebytes.Malwarebytes", "name": "Malwarebytes", "description": "On-demand scanner for malware Defender misses.", "essential": false, "supportsLocation": false },
+        { "wingetId": "DominikReichl.KeePass", "name": "KeePass 2", "description": "Offline password manager with an encrypted database.", "essential": false, "supportsLocation": true }
       ]
     },
     {
@@ -155,9 +155,9 @@
       "name": "Online Storage",
       "icon": "☁️",
       "apps": [
-        { "wingetId": "Microsoft.OneDrive", "name": "OneDrive", "description": "Microsoft's cloud storage, built into Windows.", "essential": false },
-        { "wingetId": "Google.GoogleDrive", "name": "Google Drive", "description": "Syncs Google Drive files to a folder on your PC.", "essential": false },
-        { "wingetId": "Dropbox.Dropbox", "name": "Dropbox", "description": "Cloud file sync and sharing.", "essential": false }
+        { "wingetId": "Microsoft.OneDrive", "name": "OneDrive", "description": "Microsoft's cloud storage, built into Windows.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Google.GoogleDrive", "name": "Google Drive", "description": "Syncs Google Drive files to a folder on your PC.", "essential": false, "supportsLocation": false },
+        { "wingetId": "Dropbox.Dropbox", "name": "Dropbox", "description": "Cloud file sync and sharing.", "essential": false, "supportsLocation": false }
       ]
     },
     {
@@ -165,12 +165,12 @@
       "name": "Runtimes",
       "icon": "⚙️",
       "apps": [
-        { "wingetId": "Microsoft.VCRedist.2015+.x64", "name": "VC++ Redist x64", "description": "Visual C++ runtime that many games and apps require.", "essential": true },
-        { "wingetId": "Microsoft.VCRedist.2015+.x86", "name": "VC++ Redist x86", "description": "32-bit Visual C++ runtime for older software.", "essential": true },
-        { "wingetId": "Microsoft.DotNet.DesktopRuntime.8", "name": ".NET Desktop Runtime 8", "description": "Runs desktop apps built on .NET 8.", "essential": false },
-        { "wingetId": "Microsoft.DotNet.DesktopRuntime.9", "name": ".NET Desktop Runtime 9", "description": "Runs desktop apps built on .NET 9.", "essential": false },
-        { "wingetId": "EclipseAdoptium.Temurin.21.JDK", "name": "Temurin JDK 21", "description": "Open source Java development kit, LTS release.", "essential": false },
-        { "wingetId": "Amazon.Corretto.21.JDK", "name": "Amazon Corretto 21", "description": "Amazon's free, production-ready Java distribution.", "essential": false }
+        { "wingetId": "Microsoft.VCRedist.2015+.x64", "name": "VC++ Redist x64", "description": "Visual C++ runtime that many games and apps require.", "essential": true, "supportsLocation": true },
+        { "wingetId": "Microsoft.VCRedist.2015+.x86", "name": "VC++ Redist x86", "description": "32-bit Visual C++ runtime for older software.", "essential": true, "supportsLocation": true },
+        { "wingetId": "Microsoft.DotNet.DesktopRuntime.8", "name": ".NET Desktop Runtime 8", "description": "Runs desktop apps built on .NET 8.", "essential": false, "supportsLocation": true },
+        { "wingetId": "Microsoft.DotNet.DesktopRuntime.9", "name": ".NET Desktop Runtime 9", "description": "Runs desktop apps built on .NET 9.", "essential": false, "supportsLocation": true },
+        { "wingetId": "EclipseAdoptium.Temurin.21.JDK", "name": "Temurin JDK 21", "description": "Open source Java development kit, LTS release.", "essential": false, "supportsLocation": true },
+        { "wingetId": "Amazon.Corretto.21.JDK", "name": "Amazon Corretto 21", "description": "Amazon's free, production-ready Java distribution.", "essential": false, "supportsLocation": true }
       ]
     }
   ]
