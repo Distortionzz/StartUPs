@@ -301,6 +301,7 @@ public partial class MainWindow : Window
         LocationNote.Text =
             $"{supported} of {_apps.Count} apps can be redirected here, each into its own subfolder. " +
             $"The other {fixedPlace} install where their own installer decides. " +
+            "Anything that ignores the folder anyway is listed at the end of the run. " +
             "Game libraries are set inside Steam, Epic and the other launchers, not here.";
         LocationNote.Visibility = Visibility.Visible;
     }
@@ -556,6 +557,8 @@ public partial class MainWindow : Window
                         ? WingetService.BuildInstallPath(_installRoot, app.Name)
                         : null;
 
+                    app.RequestedLocation = location ?? "";
+
                     var result = await WingetService.InstallAsync(app.WingetId, reporter, token, location);
 
                     if (result.Succeeded)
@@ -658,6 +661,26 @@ public partial class MainWindow : Window
             message.AppendLine();
             foreach (var app in failed)
                 message.AppendLine($"  - {app.Name}: {app.LastError}");
+        }
+
+        // winget reports success whether or not the installer honoured the folder
+        // it was handed, so the only way to know is to look for it afterwards.
+        var ignoredLocation = queue
+            .Where(a => a.State == InstallState.Installed
+                        && a.RequestedLocation.Length > 0
+                        && !Directory.Exists(a.RequestedLocation))
+            .ToList();
+
+        if (ignoredLocation.Count > 0)
+        {
+            message.AppendLine();
+            message.AppendLine("Installed, but not in the folder you chose:");
+            message.AppendLine();
+            foreach (var app in ignoredLocation)
+                message.AppendLine($"  - {app.Name}");
+            message.AppendLine();
+            message.AppendLine("Their installers decide their own location and ignored the");
+            message.AppendLine("one they were given. Nothing went wrong with the install.");
         }
 
         MessageBox.Show(this, message.ToString(), "StartUPs - run complete",

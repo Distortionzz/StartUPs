@@ -111,6 +111,13 @@ public class AppEntry : INotifyPropertyChanged
     /// <summary>Details of a failure, shown in the end-of-run summary.</summary>
     [JsonIgnore] public string LastError { get; set; } = "";
 
+    /// <summary>
+    /// The folder this app was asked to install into, when a custom root was set.
+    /// Checked after the run: winget reports success whether or not the installer
+    /// actually honoured it, so the folder existing is the only real evidence.
+    /// </summary>
+    [JsonIgnore] public string RequestedLocation { get; set; } = "";
+
     private double _downloadPercent;
     private string _speedText = "";
 

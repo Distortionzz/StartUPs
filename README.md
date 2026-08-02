@@ -21,7 +21,7 @@ Setting up a fresh Windows install means visiting a dozen websites, dodging the 
 - **Skips what you already have** — checks each app before installing
 - **Sees what is already on the PC** — one winget call badges every app it detects, refreshed after every run
 - **Uninstall too** — the Installed view lists what StartUPs can see and removes any of it in one batch
-- **Choose where things land** — point 63 of the 94 apps at another drive, each into its own subfolder
+- **Choose where things land** — point 40 of the 94 apps at another drive, each into its own subfolder, and get told about any that ignored it
 - **Select Essentials** — one click ticks the 19 apps almost everyone wants
 - **Instant search** across app names, descriptions, and package IDs
 - **Cancel any time** — stops the current download and leaves the rest untouched
@@ -66,14 +66,29 @@ Runs happen one app at a time because winget takes a machine-wide lock — paral
 
 winget installs into exactly the path it is given, so each app gets its own subfolder under the root rather than all of them landing in one directory.
 
-This cannot apply to the whole catalog. winget's `--location` only works for installers that expose a directory switch — Inno Setup's `/DIR=`, NSIS's `/D=`, MSI's `TARGETDIR`. Plain `.exe` and MSIX packages hardcode their own destination, and winget fails the install outright rather than quietly ignoring the flag. Each catalog entry therefore carries a `supportsLocation` flag, checked against the live winget source:
+This cannot apply to the whole catalog, and the reason is worth understanding: **winget passing a folder to an installer does not mean the installer uses it.**
+
+winget hands the path over as whatever switch that installer family expects. Whether it is obeyed depends on who wrote the installer, and winget reports success either way — so an installer that ignores it looks identical to one that honoured it.
+
+| Installer family | How the path is passed | Obeyed? |
+|---|---|---|
+| Inno Setup | `/DIR=` | ✅ handled by Inno itself |
+| NSIS | `/D=` | ✅ handled by NSIS itself |
+| portable | winget places the file | ✅ winget is in control |
+| MSI / WiX | `TARGETDIR` | ⚠️ only if the author wired it up |
+| burn | forwarded to a nested installer | ⚠️ depends on that installer |
+| exe, MSIX | not supported at all | ❌ |
+
+Only the first three are claimed. Epic Games Launcher is the case that made this concrete: it is a WiX MSI, so it *looks* redirectable, but its MSI hardcodes `C:\Program Files (x86)\Epic Games` and quietly ignores `TARGETDIR`.
 
 | | Apps |
 |---|---|
-| Can be redirected (inno, nullsoft, wix, burn, msi, portable) | **63** |
-| Fixed by their own installer (exe, msix) | **31** |
+| Can be redirected (inno, nullsoft, portable) | **40** |
+| Install where their own installer decides | **54** |
 
-Apps that cannot be redirected are simply installed normally; the footer says how many that is before you start.
+Apps that cannot be redirected are simply installed normally, and the footer says how many that is before you start.
+
+Because even an Inno or NSIS installer can ignore the switch, StartUPs checks afterwards. Any app that installed successfully but left the chosen folder missing is listed at the end of the run, so a silent miss is visible rather than something you find weeks later.
 
 **Games are the exception worth knowing.** Steam, Epic, EA, Ubisoft, GOG and Battle.net each manage their own library folders, and that is where the hundreds of gigabytes actually go. Moving the launcher does not move the games — set the library location inside the launcher instead.
 
@@ -146,13 +161,13 @@ winget search --id Valve.Steam --exact
 
 Set `essential` to `true` to include the app in the **Select Essentials** one-click preset.
 
-Set `supportsLocation` to `true` only if the installer accepts a target directory. Check its type first — `inno`, `nullsoft`, `wix`, `burn`, `msi` and `portable` do; `exe` and `msix` do not:
+Set `supportsLocation` to `true` only for `inno`, `nullsoft` and `portable` installers, which implement the directory switch themselves. Check the type first:
 
 ```
 winget show --id Valve.Steam --exact | findstr /i "Installer Type"
 ```
 
-Getting this wrong fails the install rather than falling back to the default. The file is embedded into the executable at build time, so rebuild after editing.
+Leave it `false` for everything else — including `msi`, `wix` and `burn`. Those accept a path and may quietly ignore it, which is worse than not offering the choice. The file is embedded into the executable at build time, so rebuild after editing.
 
 ## Project layout
 
