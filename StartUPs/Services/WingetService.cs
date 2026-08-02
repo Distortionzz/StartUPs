@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace StartUPs.Services;
@@ -107,6 +108,68 @@ public static class WingetService
             $"install --id {wingetId} --exact --source winget --silent " +
             "--accept-package-agreements --accept-source-agreements --disable-interactivity",
             progress, ct);
+
+    /// <summary>Removes one package silently.</summary>
+    public static Task<WingetResult> UninstallAsync(string wingetId, CancellationToken ct)
+        => RunAsync(
+            $"uninstall --id {wingetId} --exact --silent " +
+            "--accept-source-agreements --disable-interactivity",
+            null, ct);
+
+    /// <summary>
+    /// Every package winget can see on this PC, by package id.
+    ///
+    /// This is one winget call for the whole machine. Asking per app with
+    /// <see cref="IsInstalledAsync"/> would mean a process launch each, which is
+    /// far too slow across a catalog this size. 'export' is used rather than
+    /// 'list' because it emits JSON instead of a column-aligned table.
+    /// </summary>
+    public static async Task<HashSet<string>> GetInstalledAsync(CancellationToken ct)
+    {
+        var found = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var path = Path.Combine(Path.GetTempPath(), $"StartUPs_installed_{Guid.NewGuid():N}.json");
+
+        try
+        {
+            await RunAsync(
+                $"export -o \"{path}\" --disable-interactivity --accept-source-agreements",
+                null, ct);
+
+            if (!File.Exists(path)) return found;
+
+            await using var stream = File.OpenRead(path);
+            using var document = await JsonDocument.ParseAsync(stream, cancellationToken: ct);
+
+            if (!document.RootElement.TryGetProperty("Sources", out var sources)) return found;
+
+            foreach (var source in sources.EnumerateArray())
+            {
+                if (!source.TryGetProperty("Packages", out var packages)) continue;
+
+                foreach (var package in packages.EnumerateArray())
+                {
+                    if (package.TryGetProperty("PackageIdentifier", out var id) &&
+                        id.GetString() is { Length: > 0 } value)
+                        found.Add(value);
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch
+        {
+            // Detection is best effort. An empty set simply means nothing is
+            // badged as installed - it must never stop the app from loading.
+        }
+        finally
+        {
+            try { File.Delete(path); } catch { /* best effort */ }
+        }
+
+        return found;
+    }
 
     // ------------------------------------------------------------------ process
 

@@ -41,6 +41,32 @@ public class AppEntry : INotifyPropertyChanged
         ? "?"
         : Name[..1].ToUpperInvariant();
 
+    private bool _isInstalled;
+
+    /// <summary>
+    /// True when winget reports this package as present on the PC. Detected in
+    /// bulk at startup, so it reflects only what winget can see - an app put on
+    /// the machine by other means may not show up here.
+    /// </summary>
+    [JsonIgnore]
+    public bool IsInstalled
+    {
+        get => _isInstalled;
+        set
+        {
+            if (_isInstalled == value) return;
+            _isInstalled = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(ShowInstalledBadge));
+        }
+    }
+
+    /// <summary>The version winget reports, when it knows one.</summary>
+    [JsonIgnore] public string InstalledVersion { get; set; } = "";
+
+    /// <summary>The badge would only compete with the live status during a run.</summary>
+    [JsonIgnore] public bool ShowInstalledBadge => _isInstalled && _state == InstallState.None;
+
     private bool _isSelected;
 
     /// <summary>True when the user has ticked this app's checkbox.</summary>
@@ -71,6 +97,7 @@ public class AppEntry : INotifyPropertyChanged
             OnPropertyChanged(nameof(StatusText));
             OnPropertyChanged(nameof(HasStatus));
             OnPropertyChanged(nameof(ShowProgressBar));
+            OnPropertyChanged(nameof(ShowInstalledBadge));
         }
     }
 
@@ -109,6 +136,8 @@ public class AppEntry : INotifyPropertyChanged
         InstallState.AlreadyInstalled => "Already installed",
         InstallState.Failed => "Failed",
         InstallState.Cancelled => "Cancelled",
+        InstallState.Uninstalling => "Removing...",
+        InstallState.Uninstalled => "Removed",
         _ => ""
     };
 

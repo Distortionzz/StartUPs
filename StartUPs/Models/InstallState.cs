@@ -25,5 +25,11 @@ public enum InstallState
     Failed,
 
     /// <summary>The user cancelled before this app was reached.</summary>
-    Cancelled
+    Cancelled,
+
+    /// <summary>winget is removing it right now.</summary>
+    Uninstalling,
+
+    /// <summary>Removed successfully during this run.</summary>
+    Uninstalled
 }

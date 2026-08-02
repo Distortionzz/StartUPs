@@ -19,6 +19,8 @@ Setting up a fresh Windows install means visiting a dozen websites, dodging the 
 - **One UAC prompt for the whole batch** — not one per app
 - **Live download progress** with a real transfer-speed readout
 - **Skips what you already have** — checks each app before installing
+- **Sees what is already on the PC** — one winget call at startup badges every app it detects
+- **Uninstall too** — the Installed view lists what StartUPs can see and removes any of it in one batch
 - **Select Essentials** — one click ticks the 19 apps almost everyone wants
 - **Instant search** across app names, descriptions, and package IDs
 - **Cancel any time** — stops the current download and leaves the rest untouched
@@ -50,6 +52,21 @@ Click Install
 ```
 
 Installs run one at a time because winget takes a machine-wide lock — parallel installs would simply fail.
+
+## Removing apps
+
+The **Installed** entry in the sidebar shows only the catalog apps StartUPs can find on this PC. Tick any of them and the footer button turns red: **Uninstall Selected**.
+
+Detection is a single `winget export` call made in the background at startup, not one check per app — across a 94-app catalog that would mean 94 process launches. It costs about two seconds and never blocks the window.
+
+Removal is deliberately harder to do by accident than installing:
+
+- Ticks never carry between the install and Installed views; switching clears the selection
+- Every app in the queue is listed by name before anything runs, and the dialog defaults to Cancel
+- Launchers that manage their own content — Steam, Epic, EA, Ubisoft, GOG, Battle.net — are called out separately, because removing them can delete the games they installed
+- Anything from the Runtimes category is flagged too, since other software on the PC may depend on it
+
+Some installers refuse to run without showing their own window, which a silent removal cannot answer. Those are reported as failures at the end of the run and need uninstalling from Windows Settings instead.
 
 ## Requirements
 
@@ -148,6 +165,7 @@ Simple Icons is CC0; the brand marks themselves remain trademarks of their respe
 - **Progress covers downloading only.** Once a file is downloaded, winget hands off to the vendor's own installer, which reports no progress — the bar sits at 100% showing "Installing..." until it finishes.
 - **Microsoft Store apps excluded.** Apps that exist only in the Store (NVIDIA App, WhatsApp, MusicBee) are left out of the catalog because Store packages do not reliably install silently.
 - **A few apps have no winget package at all.** FileZilla, for instance, is absent from the winget source entirely, so it cannot be offered no matter how popular it is.
+- **Detection only sees what winget sees.** The Installed view is built from winget's own inventory, so an app put on the PC by other means may not appear even though it is there. It is a "not detected" list, not proof of absence.
 - **Upstream packages can break.** A winget manifest points at the vendor's own URL and pins the installer's hash, so a vendor who silently replaces a file breaks the package for everyone until the manifest is updated. AIMP (hash mismatch) and RealVNC Viewer (dead URL) were both dropped from the catalog for this reason — winget correctly refuses to install either.
 
 ## Licence

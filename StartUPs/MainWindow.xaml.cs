@@ -18,7 +18,18 @@ namespace StartUPs;
 public partial class MainWindow : Window
 {
     private const string AllCategoryId = "all";
+    private const string InstalledCategoryId = "installed";
     private const string UpdatesCategoryId = "updates";
+
+    /// <summary>
+    /// Removing these takes the user's content with them - a Steam uninstall can
+    /// drop a whole game library. Worth naming explicitly before we run.
+    /// </summary>
+    private static readonly HashSet<string> DataLossRisk = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Valve.Steam", "EpicGames.EpicGamesLauncher", "ElectronicArts.EADesktop",
+        "Ubisoft.Connect", "GOG.Galaxy", "Blizzard.BattleNet"
+    };
 
     private readonly ObservableCollection<AppEntry> _apps = new();
     private ICollectionView _view = null!;
@@ -56,10 +67,12 @@ public partial class MainWindow : Window
             _apps.Add(app);
         }
 
-        // Sidebar: a synthetic "All Apps" entry followed by the real categories.
+        // Sidebar: two synthetic entries that cut across the catalog, then the
+        // real categories, then Updates.
         var sidebar = new List<Category>
         {
-            new() { Id = AllCategoryId, Name = "All Apps", Icon = "\U0001F4E6" }
+            new() { Id = AllCategoryId, Name = "All Apps", Icon = "\U0001F4E6" },
+            new() { Id = InstalledCategoryId, Name = "Installed", Icon = "✔" }
         };
         sidebar.AddRange(catalog.Categories);
         sidebar.Add(new Category { Id = UpdatesCategoryId, Name = "Updates", Icon = "⬇" });
@@ -73,7 +86,36 @@ public partial class MainWindow : Window
 
         ApplyGrouping();
         UpdateSummary();
+
+        // One winget call, off the UI thread, so the window is usable immediately.
+        _ = RefreshInstalledAsync();
     }
+
+    // ---------------------------------------------------------------- detection
+
+    /// <summary>Asks winget what is on this PC and badges the matching cards.</summary>
+    private async Task RefreshInstalledAsync()
+    {
+        HashSet<string> installed;
+        try
+        {
+            installed = await WingetService.GetInstalledAsync(CancellationToken.None);
+        }
+        catch
+        {
+            return;   // best effort; cards simply stay unbadged
+        }
+
+        foreach (var app in _apps)
+            app.IsInstalled = installed.Contains(app.WingetId);
+
+        _installedKnown = true;
+
+        if (_activeCategoryId == InstalledCategoryId) RefreshList();
+        UpdateSummary();
+    }
+
+    private bool _installedKnown;
 
     // ---------------------------------------------------------------- filtering
 
@@ -81,8 +123,14 @@ public partial class MainWindow : Window
     {
         if (item is not AppEntry app) return false;
 
-        if (_activeCategoryId != AllCategoryId && app.CategoryId != _activeCategoryId)
+        if (_activeCategoryId == InstalledCategoryId)
+        {
+            if (!app.IsInstalled) return false;
+        }
+        else if (_activeCategoryId != AllCategoryId && app.CategoryId != _activeCategoryId)
+        {
             return false;
+        }
 
         if (_searchText.Length == 0) return true;
 
@@ -95,7 +143,7 @@ public partial class MainWindow : Window
     private void ApplyGrouping()
     {
         _view.GroupDescriptions.Clear();
-        if (_activeCategoryId == AllCategoryId)
+        if (_activeCategoryId is AllCategoryId or InstalledCategoryId)
             _view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(AppEntry.CategoryName)));
     }
 
@@ -108,6 +156,12 @@ public partial class MainWindow : Window
 
         bool anyVisible = _view.Cast<AppEntry>().Any();
         EmptyMessage.Visibility = anyVisible ? Visibility.Collapsed : Visibility.Visible;
+
+        EmptyMessage.Text = _activeCategoryId == InstalledCategoryId
+            ? (_installedKnown
+                ? "None of the catalog's apps were detected on this PC."
+                : "Checking what is installed...")
+            : "No apps match your search.";
     }
 
     // ---------------------------------------------------------------- events
@@ -122,8 +176,21 @@ public partial class MainWindow : Window
             return;
         }
 
-        ShowAppsView();
+        // Crossing between the install and uninstall views clears the selection.
+        // Ticks made to install something must never carry over into a queue
+        // that removes things.
+        bool wasUninstall = IsUninstallMode;
+
+        // Set the active category first: ShowAppsView and RefreshList both read it.
         _activeCategoryId = category.Id;
+
+        if (wasUninstall != IsUninstallMode)
+        {
+            foreach (var app in _apps)
+                app.IsSelected = false;
+        }
+
+        ShowAppsView();
         RefreshList();
     }
 
@@ -145,8 +212,18 @@ public partial class MainWindow : Window
         AppScroller.Visibility = Visibility.Visible;
         SearchArea.Visibility = Visibility.Visible;
         FooterActions.Visibility = Visibility.Visible;
+
+        // "Select Essentials" is an install-side shortcut; it has no meaning
+        // when the list is showing what is already on the PC.
+        EssentialsButton.Visibility = _activeCategoryId == InstalledCategoryId
+            ? Visibility.Collapsed
+            : Visibility.Visible;
+
         UpdateSummary();
     }
+
+    /// <summary>True when the footer's primary button should remove rather than install.</summary>
+    private bool IsUninstallMode => _activeCategoryId == InstalledCategoryId;
 
     private void SearchInput_TextChanged(object sender, TextChangedEventArgs e)
     {
@@ -198,7 +275,152 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (IsUninstallMode)
+        {
+            // Never queue anything the Installed view is not actually showing.
+            queue = queue.Where(a => a.IsInstalled).ToList();
+            if (queue.Count == 0) return;
+
+            if (!ConfirmUninstall(queue)) return;
+            await RunUninstallQueueAsync(queue);
+            return;
+        }
+
         await RunInstallQueueAsync(queue);
+    }
+
+    /// <summary>
+    /// Removing software is not undoable, so the queue is spelled out in full and
+    /// anything that could take user data with it is called out by name.
+    /// </summary>
+    private bool ConfirmUninstall(List<AppEntry> queue)
+    {
+        var message = new StringBuilder();
+        message.AppendLine($"Remove {queue.Count} app(s) from this PC?");
+        message.AppendLine();
+
+        foreach (var app in queue)
+            message.AppendLine($"  - {app.Name}");
+
+        var risky = queue.Where(a => DataLossRisk.Contains(a.WingetId)).ToList();
+        if (risky.Count > 0)
+        {
+            message.AppendLine();
+            message.AppendLine("WARNING - these also manage your installed content:");
+            message.AppendLine();
+            foreach (var app in risky)
+                message.AppendLine($"  - {app.Name}");
+            message.AppendLine();
+            message.AppendLine("Removing them can delete the games and files they installed.");
+        }
+
+        var runtimes = queue.Where(a => a.CategoryId == "runtimes").ToList();
+        if (runtimes.Count > 0)
+        {
+            message.AppendLine();
+            message.AppendLine("WARNING - other software on this PC may depend on:");
+            message.AppendLine();
+            foreach (var app in runtimes)
+                message.AppendLine($"  - {app.Name}");
+        }
+
+        message.AppendLine();
+        message.AppendLine("This cannot be undone.");
+
+        var answer = MessageBox.Show(this, message.ToString(), "StartUPs - confirm removal",
+            MessageBoxButton.OKCancel,
+            risky.Count > 0 || runtimes.Count > 0 ? MessageBoxImage.Warning : MessageBoxImage.Question,
+            MessageBoxResult.Cancel);
+
+        return answer == MessageBoxResult.OK;
+    }
+
+    private async Task RunUninstallQueueAsync(List<AppEntry> queue)
+    {
+        _cancelSource = new CancellationTokenSource();
+        var token = _cancelSource.Token;
+
+        EnterInstallMode(queue);
+        SelectionSummary.Text = $"Removing {queue.Count} app(s)...";
+
+        foreach (var app in queue)
+            app.State = InstallState.Pending;
+
+        int done = 0;
+
+        try
+        {
+            foreach (var app in queue)
+            {
+                token.ThrowIfCancellationRequested();
+
+                ProgressLabel.Text = $"{app.Name}  -  {done + 1} of {queue.Count}";
+                app.State = InstallState.Uninstalling;
+
+                var result = await WingetService.UninstallAsync(app.WingetId, token);
+
+                if (result.Succeeded)
+                {
+                    app.State = InstallState.Uninstalled;
+                    app.IsInstalled = false;
+                    app.IsSelected = false;
+                }
+                else
+                {
+                    app.LastError = $"winget exited with {result.ExitCodeHex}";
+                    app.State = InstallState.Failed;
+                }
+
+                done++;
+                InstallProgress.Value = done;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            foreach (var app in queue)
+            {
+                if (app.State is InstallState.Pending or InstallState.Uninstalling)
+                    app.State = InstallState.Cancelled;
+            }
+        }
+        finally
+        {
+            ExitInstallMode();
+            _cancelSource?.Dispose();
+            _cancelSource = null;
+        }
+
+        ShowUninstallSummary(queue);
+        RefreshList();
+
+        // Re-read the PC rather than trusting our own bookkeeping.
+        _ = RefreshInstalledAsync();
+    }
+
+    private void ShowUninstallSummary(List<AppEntry> queue)
+    {
+        int removed = queue.Count(a => a.State == InstallState.Uninstalled);
+        var failed = queue.Where(a => a.State == InstallState.Failed).ToList();
+        int cancelled = queue.Count(a => a.State == InstallState.Cancelled);
+
+        var message = new StringBuilder();
+        message.AppendLine($"Removed:            {removed}");
+        if (cancelled > 0) message.AppendLine($"Cancelled:          {cancelled}");
+        if (failed.Count > 0)
+        {
+            message.AppendLine($"Failed:             {failed.Count}");
+            message.AppendLine();
+            foreach (var app in failed)
+                message.AppendLine($"  - {app.Name}: {app.LastError}");
+            message.AppendLine();
+            message.AppendLine("Some installers refuse to run without showing their own window, " +
+                               "which silent removal cannot answer. Those need uninstalling " +
+                               "from Windows Settings instead.");
+        }
+
+        MessageBox.Show(this, message.ToString(), "StartUPs - removal complete",
+            MessageBoxButton.OK,
+            failed.Count > 0 ? MessageBoxImage.Warning : MessageBoxImage.Information);
     }
 
     private async Task RunInstallQueueAsync(List<AppEntry> queue)
@@ -489,6 +711,28 @@ public partial class MainWindow : Window
         if (_isInstalling) return;
 
         int count = _apps.Count(a => a.IsSelected);
+
+        if (IsUninstallMode)
+        {
+            int detected = _apps.Count(a => a.IsInstalled);
+            count = _apps.Count(a => a.IsSelected && a.IsInstalled);
+
+            SelectionSummary.Text = count switch
+            {
+                0 => _installedKnown
+                        ? $"No apps selected  -  {detected} detected on this PC"
+                        : "Checking what is installed...",
+                1 => "1 app selected",
+                _ => $"{count} apps selected"
+            };
+
+            InstallButton.Style = (Style)FindResource("DangerButton");
+            InstallButton.IsEnabled = count > 0;
+            InstallButton.Content = count > 0 ? $"Uninstall Selected ({count})" : "Uninstall Selected";
+            return;
+        }
+
+        InstallButton.Style = (Style)FindResource("PrimaryButton");
 
         SelectionSummary.Text = count switch
         {
