@@ -15,7 +15,7 @@ Setting up a fresh Windows install means visiting a dozen websites, dodging the 
 ## Features
 
 - **94 apps across 11 categories** — Gaming, Development, Browsers, Media, Utilities, Communication, Imaging, Documents, Security, Online Storage, Runtimes
-- **Real icons for almost every app** — 87 of 94 carry the genuine brand mark
+- **Real icons for almost every app** — 91 of 94 carry the genuine brand mark
 - **One UAC prompt for the whole batch** — not one per app
 - **Live download progress** with a real transfer-speed readout
 - **Skips what you already have** — checks each app before installing
@@ -126,12 +126,14 @@ StartUPs/
 
 ## App icons
 
-87 of the 94 apps show their genuine icon, from one of two sources:
+91 of the 94 apps show their genuine icon, from one of two sources:
 
 - **56 apps** use vector brand glyphs from [Simple Icons](https://simpleicons.org/), stored as raw path data in `icons.json` and rendered natively by WPF. They stay crisp at any size and cost about 65 KB of path data in total.
-- **31 apps** with no brand glyph — mostly niche utilities such as HWiNFO, GPU-Z and Everything — ship as PNGs extracted from their official installers at 128x128.
+- **35 apps** with no brand glyph — mostly niche utilities such as HWiNFO, GPU-Z and Everything — ship as PNGs extracted from their official installers at 128x128.
 
-The remaining **7** fall back to a generated letter tile, coloured deterministically so an app always looks the same. This is deliberate rather than a gap: their installers ship only the generic Inno Setup or Windows Installer icon, and a stock monitor graphic reads as broken in a way the letter tile does not. Getting real marks for WinMerge, MediaMonkey, WizTree, IrfanView and KeePass would need `innoextract` to unpack the Inno payload; the two VC++ Redistributables have no brand mark to find.
+Many installers expose only a generic wrapper icon, so the real mark usually has to be recovered from the payload: `msiexec /a` unpacks MSI packages, 7-Zip handles NSIS and embedded archives, and `innoextract` cracks Inno Setup. That is how PuTTY, WinDirStat, IrfanView, WizTree, MediaMonkey and WinMerge get their genuine icons rather than a stock monitor graphic.
+
+The remaining **3** fall back to a generated letter tile, coloured deterministically so an app always looks the same. The two VC++ Redistributables have no brand mark to find, and KeePass ships an Inno Setup revision newer than innoextract 1.9 can unpack.
 
 Simple Icons has removed the Adobe, Microsoft, Amazon and Java marks following trademark requests, so those apps use extracted PNGs instead.
 
