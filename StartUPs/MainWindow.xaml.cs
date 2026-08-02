@@ -784,7 +784,7 @@ public partial class MainWindow : Window
                 _pendingUpdate.DownloadUrl, _pendingUpdate.ExpectedSha256, reporter, CancellationToken.None);
 
             UpdateDetail.Text = "Checksum verified. Restarting to finish the update...";
-            UpdateService.ApplyUpdateAndRestart(file);
+            UpdateService.ApplyUpdateAndRestart(file, _pendingUpdate.ExpectedSha256);
 
             // The helper script waits for this process to exit before swapping the file.
             Application.Current.Shutdown();

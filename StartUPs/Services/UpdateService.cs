@@ -194,6 +194,13 @@ public static class UpdateService
         return destination;
     }
 
+    private static string ComputeSha256(string path)
+    {
+        using var stream = File.OpenRead(path);
+        using var sha = System.Security.Cryptography.SHA256.Create();
+        return Convert.ToHexString(sha.ComputeHash(stream)).ToLowerInvariant();
+    }
+
     private static async Task<string> ComputeSha256Async(string path, CancellationToken ct)
     {
         await using var stream = File.OpenRead(path);
@@ -212,13 +219,63 @@ public static class UpdateService
     /// <summary>
     /// Windows will not let a running executable be overwritten, so a small script
     /// takes over: it retries the copy until this process exits, then relaunches.
+    ///
+    /// That copy runs elevated after this process is gone, so whatever it reads has
+    /// to be somewhere an ordinary user cannot reach. The download is therefore
+    /// staged beside the executable it will replace rather than left in the
+    /// temporary folder: the staging folder is then exactly as protected as the
+    /// target, and anyone able to write there could replace the executable directly
+    /// without waiting for an update.
+    ///
+    /// The staged copy is hashed again here, because the earlier check ran against
+    /// the file while it was still in the temporary folder - a substitution between
+    /// that check and this copy would otherwise go unnoticed.
     /// </summary>
-    public static void ApplyUpdateAndRestart(string downloadedExePath)
+    public static void ApplyUpdateAndRestart(string downloadedExePath, string expectedSha256)
     {
         var currentExe = Environment.ProcessPath
             ?? throw new InvalidOperationException("Could not determine the running executable's path.");
 
-        var scriptPath = Path.Combine(Path.GetTempPath(), $"StartUPs_apply_{Guid.NewGuid():N}.cmd");
+        var installFolder = Path.GetDirectoryName(currentExe)
+            ?? throw new InvalidOperationException("Could not determine the install folder.");
+
+        var staged = Path.Combine(installFolder, $"StartUPs_staged_{Guid.NewGuid():N}.exe");
+
+        try
+        {
+            File.Copy(downloadedExePath, staged, overwrite: true);
+            TryDelete(downloadedExePath);
+
+            // The earlier check hashed the file while it sat in the temporary
+            // folder, so re-check the staged copy. Otherwise a swap between that
+            // check and this copy would go unnoticed.
+            if (!string.IsNullOrWhiteSpace(expectedSha256) &&
+                !string.Equals(ComputeSha256(staged), expectedSha256, StringComparison.OrdinalIgnoreCase))
+            {
+                TryDelete(staged);
+                throw new InvalidOperationException(
+                    "The staged update no longer matched the checksum GitHub published, " +
+                    "so it was discarded. Download the release manually instead.");
+            }
+
+            downloadedExePath = staged;
+        }
+        catch (InvalidOperationException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            // Nothing can be written next to the executable, so the update cannot
+            // be applied safely. Better to stop than to fall back to a folder the
+            // user can write to.
+            TryDelete(downloadedExePath);
+            throw new InvalidOperationException(
+                "Could not stage the update next to StartUPs.exe, so it was not applied. " +
+                $"Download the new version manually instead. ({ex.Message})", ex);
+        }
+
+        var scriptPath = Path.Combine(installFolder, $"StartUPs_apply_{Guid.NewGuid():N}.cmd");
 
         var script = $"""
             @echo off
@@ -253,7 +310,7 @@ public static class UpdateService
             Arguments = $"/c \"{scriptPath}\"",
             CreateNoWindow = true,
             UseShellExecute = false,
-            WorkingDirectory = Path.GetTempPath()
+            WorkingDirectory = installFolder
         });
     }
 
