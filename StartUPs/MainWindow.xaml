@@ -72,6 +72,15 @@
                          ItemContainerStyle="{StaticResource SidebarItem}"
                          SelectionChanged="CategoryList_SelectionChanged"
                          ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <!-- The sidebar is disabled during a run so the selection cannot
+                         change mid-install. WPF's stock ListBox template repaints
+                         itself with the system "control" and "grey text" colours when
+                         disabled, which turns the sidebar white on a dark theme.
+                         Redirecting those two keys keeps it looking like itself. -->
+                    <ListBox.Resources>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent"/>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.GrayTextBrushKey}" Color="#FF8A8A99"/>
+                    </ListBox.Resources>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
@@ -192,7 +201,10 @@
                     <TextBlock x:Name="ProgressLabel" Grid.Row="0" Text=""
                                FontSize="12" Foreground="{StaticResource TextPrimary}"
                                Margin="0,0,0,8"/>
-                    <ProgressBar x:Name="InstallProgress" Grid.Row="1" Minimum="0" Maximum="1" Value="0"/>
+                    <!-- Maximum is the queue length; Value carries a fraction while
+                         the current app downloads, so a single-app run still moves. -->
+                    <ProgressBar x:Name="InstallProgress" Grid.Row="1"
+                                 Style="{StaticResource DownloadBar}"/>
                 </Grid>
 
                 <!-- Optional install root. Blank means every app uses its own default. -->

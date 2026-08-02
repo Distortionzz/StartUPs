@@ -535,10 +535,15 @@ public partial class MainWindow : Window
 
                     // Progress<T> was created on the UI thread, so these callbacks
                     // marshal back to it automatically - safe to touch the card.
+                    int completed = done;
                     var reporter = new Progress<DownloadSample>(sample =>
                     {
                         app.ReportDownload(sample.Percent,
                             WingetService.FormatSpeed(sample.BytesPerSecond));
+
+                        // Carry the in-flight download as a fraction of one app, so
+                        // the footer bar moves even when only one app is queued.
+                        InstallProgress.Value = completed + Math.Clamp(sample.Percent, 0, 100) / 100.0;
 
                         ProgressLabel.Text = sample.BytesPerSecond > 0
                             ? $"{app.Name}  -  {done + 1} of {queue.Count}   ({WingetService.FormatSpeed(sample.BytesPerSecond)})"
